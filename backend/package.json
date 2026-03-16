@@ -4,8 +4,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-  "dev": "node -r dotenv/config src/server.js"
-},
+    "dev": "node -r dotenv/config src/server.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -18,7 +18,8 @@
     "express": "^5.2.1",
     "googleapis": "^171.4.0",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.3.0"
+    "mongoose": "^9.3.0",
+    "multer": "^2.1.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

@@ -5,6 +5,8 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { authRoutes } from "./routes/auth.routes.js";
+import connectDB from "./config/db.js";
+import youtubeRoutes from "./routes/youtube.routes.js";
 
 const app = express();
 
@@ -24,9 +26,14 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", authRoutes);
+app.use("/youtube", youtubeRoutes);
 
 const PORT = process.env.PORT || 8000;
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+connectDB().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Server is running at port ${PORT}`);
+    });
+}).catch((error) => {
+    console.log("MONGO db connection failed !!! ", error);
+});;
