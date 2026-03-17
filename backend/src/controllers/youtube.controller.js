@@ -101,17 +101,14 @@ export const uploadVideo = async (req, res) => {
   let compressedThumbnailPath = null;
 
   try {
-    console.log("YouTube Upload API HIT ✅");
+    console.log("🚀 Resumable Upload Started");
 
-    // ======================
-    // ✅ FILES FROM MULTER
-    // ======================
     const videoFile = req.files?.video?.[0];
     const thumbnailFile = req.files?.thumbnail?.[0];
 
     if (!videoFile) {
       return res.status(400).json({
-        message: "Video file is required",
+        message: "Video file required",
       });
     }
 
@@ -119,14 +116,12 @@ export const uploadVideo = async (req, res) => {
     thumbnailPath = thumbnailFile?.path;
 
     // ======================
-    // ✅ GET LOGGED-IN USER (JWT)
+    // ✅ USER FROM JWT
     // ======================
     const user = await User.findById(req.user._id);
 
     if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // ======================
@@ -136,14 +131,13 @@ export const uploadVideo = async (req, res) => {
       refresh_token: user.refreshToken,
     });
 
-    // prevent duplicate listeners
     oauth2Client.removeAllListeners("tokens");
 
     oauth2Client.on("tokens", async (tokens) => {
       if (tokens.access_token) {
         user.accessToken = tokens.access_token;
         await user.save();
-        console.log("Access token refreshed ✅");
+        console.log("✅ Access token refreshed");
       }
     });
 
@@ -153,7 +147,7 @@ export const uploadVideo = async (req, res) => {
     });
 
     // ======================
-    // ✅ DYNAMIC VIDEO DATA
+    // ✅ DYNAMIC BODY DATA
     // ======================
     const {
       title = "TubeForge Upload 🚀",
@@ -163,36 +157,47 @@ export const uploadVideo = async (req, res) => {
       categoryId = "22",
     } = req.body;
 
-    const tagArray = tags
-      ? tags.split(",").map(tag => tag.trim())
-      : ["tubeforge"];
+    const tagArray = tags ? tags.split(",") : ["tubeforge"];
 
     // ======================
-    // ✅ VIDEO UPLOAD
+    // ✅ RESUMABLE UPLOAD
     // ======================
-    const videoResponse = await youtube.videos.insert({
-      part: "snippet,status",
-      requestBody: {
-        snippet: {
-          title,
-          description,
-          tags: tagArray,
-          categoryId,
+    const fileSize = fs.statSync(videoPath).size;
+
+    const response = await youtube.videos.insert(
+      {
+        part: "snippet,status",
+        requestBody: {
+          snippet: {
+            title,
+            description,
+            tags: tagArray,
+            categoryId,
+          },
+          status: {
+            privacyStatus,
+          },
         },
-        status: {
-          privacyStatus,
+        media: {
+          body: fs.createReadStream(videoPath),
         },
       },
-      media: {
-        body: fs.createReadStream(videoPath),
-      },
-    });
+      {
+        // ⭐ THIS ENABLES RESUMABLE + PROGRESS
+        onUploadProgress: (evt) => {
+          const progress = (evt.bytesRead / fileSize) * 100;
+          console.log(
+            `📤 Upload Progress: ${Math.round(progress)}%`
+          );
+        },
+      }
+    );
 
-    const videoId = videoResponse.data.id;
-    console.log("Video Uploaded ✅", videoId);
+    const videoId = response.data.id;
+    console.log("✅ Video Uploaded:", videoId);
 
     // ======================
-    // ✅ THUMBNAIL UPLOAD
+    // ✅ THUMBNAIL
     // ======================
     if (thumbnailPath) {
       compressedThumbnailPath = `uploads/compressed-${Date.now()}.jpg`;
@@ -209,44 +214,31 @@ export const uploadVideo = async (req, res) => {
         },
       });
 
-      console.log("Thumbnail Uploaded ✅");
+      console.log("✅ Thumbnail Uploaded");
     }
 
     // ======================
-    // ✅ CLEANUP FILES
+    // ✅ CLEANUP
     // ======================
-    if (videoPath && fs.existsSync(videoPath))
-      fs.unlinkSync(videoPath);
-
-    if (thumbnailPath && fs.existsSync(thumbnailPath))
-      fs.unlinkSync(thumbnailPath);
-
-    if (
-      compressedThumbnailPath &&
-      fs.existsSync(compressedThumbnailPath)
-    )
-      fs.unlinkSync(compressedThumbnailPath);
+    [videoPath, thumbnailPath, compressedThumbnailPath].forEach(
+      (file) => {
+        if (file && fs.existsSync(file)) fs.unlinkSync(file);
+      }
+    );
 
     return res.json({
-      message: "Video + Thumbnail uploaded successfully 🚀",
+      message: "Resumable upload completed 🚀",
       videoId,
     });
 
   } catch (error) {
     console.error("UPLOAD ERROR:", error);
 
-    // cleanup on failure
-    if (videoPath && fs.existsSync(videoPath))
-      fs.unlinkSync(videoPath);
-
-    if (thumbnailPath && fs.existsSync(thumbnailPath))
-      fs.unlinkSync(thumbnailPath);
-
-    if (
-      compressedThumbnailPath &&
-      fs.existsSync(compressedThumbnailPath)
-    )
-      fs.unlinkSync(compressedThumbnailPath);
+    [videoPath, thumbnailPath, compressedThumbnailPath].forEach(
+      (file) => {
+        if (file && fs.existsSync(file)) fs.unlinkSync(file);
+      }
+    );
 
     return res.status(500).json({
       message: "Upload failed",
