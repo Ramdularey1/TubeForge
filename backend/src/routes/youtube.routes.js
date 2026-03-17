@@ -1,11 +1,39 @@
-import express from "express";
+// import express from "express";
+// // import { uploadVideo } from "../controllers/youtube.controller.js";
 // import { uploadVideo } from "../controllers/youtube.controller.js";
+// import { upload } from "../middlewares/upload.middleware.js";
+
+// const router = express.Router();
+
+// // "video" must match Postman key
+// router.post("/video", upload.single("video"), uploadVideo);
+
+// export default router;
+
+
+import express from "express";
 import { uploadVideo } from "../controllers/youtube.controller.js";
 import { upload } from "../middlewares/upload.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// "video" must match Postman key
-router.post("/video", upload.single("video"), uploadVideo);
+/*
+  Route: POST /youtube/video
+
+  form-data keys:
+  - video (file) ✅ required
+  - thumbnail (file) ✅ optional
+*/
+
+router.post(
+  "/video",
+  verifyJWT, // 🔐 protect route
+  upload.fields([
+    { name: "video", maxCount: 1 },
+    { name: "thumbnail", maxCount: 1 },
+  ]),
+  uploadVideo
+);
 
 export default router;

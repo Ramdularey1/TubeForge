@@ -89,6 +89,8 @@ export const googleCallback = async (req, res) => {
 
     // exchange code → tokens
     const { tokens } = await oauth2Client.getToken(code);
+    console.log("🔥 GOOGLE TOKENS RECEIVED:");
+    console.log(tokens);
     oauth2Client.setCredentials(tokens);
 
     // get google user info
