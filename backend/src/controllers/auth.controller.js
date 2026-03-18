@@ -74,7 +74,8 @@ export const googleLogin = async (req, res) => {
     scope: [
       "profile",
       "email",
-      "https://www.googleapis.com/auth/youtube.upload"
+      "https://www.googleapis.com/auth/youtube.upload",
+      "https://www.googleapis.com/auth/youtube.readonly"
     ]
   });
 

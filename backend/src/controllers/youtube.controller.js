@@ -246,3 +246,86 @@ export const uploadVideo = async (req, res) => {
     });
   }
 };
+
+
+
+// ======================
+// ✅ YOUTUBE DASHBOARD
+// ======================
+export const getDashboard = async (req, res) => {
+  try {
+    console.log("YouTube Dashboard API HIT ✅");
+
+    // logged-in user from JWT middleware
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    // ======================
+    // GOOGLE AUTH
+    // ======================
+    oauth2Client.setCredentials({
+      refresh_token: user.refreshToken,
+    });
+
+    const youtube = google.youtube({
+      version: "v3",
+      auth: oauth2Client,
+    });
+
+    // ======================
+    // ✅ CHANNEL INFO
+    // ======================
+    const channelResponse = await youtube.channels.list({
+      part: "snippet,statistics,contentDetails",
+      mine: true,
+    });
+
+    const channel = channelResponse.data.items[0];
+
+    // ======================
+    // ✅ GET UPLOAD PLAYLIST
+    // ======================
+    const uploadsPlaylistId =
+      channel.contentDetails.relatedPlaylists.uploads;
+
+    // ======================
+    // ✅ GET VIDEOS LIST
+    // ======================
+    const videosResponse = await youtube.playlistItems.list({
+      part: "snippet,contentDetails",
+      playlistId: uploadsPlaylistId,
+      maxResults: 10,
+    });
+
+    const videos = videosResponse.data.items;
+
+    // ======================
+    // RESPONSE
+    // ======================
+    return res.json({
+      message: "Dashboard data fetched ✅",
+      channel: {
+        title: channel.snippet.title,
+        description: channel.snippet.description,
+        subscribers: channel.statistics.subscriberCount,
+        views: channel.statistics.viewCount,
+        totalVideos: channel.statistics.videoCount,
+        thumbnail: channel.snippet.thumbnails.default.url,
+      },
+      videos,
+    });
+
+  } catch (error) {
+    console.error("DASHBOARD ERROR:", error);
+
+    return res.status(500).json({
+      message: "Failed to fetch dashboard",
+      error: error.message,
+    });
+  }
+};
