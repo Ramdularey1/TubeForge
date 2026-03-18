@@ -329,3 +329,47 @@ export const getDashboard = async (req, res) => {
     });
   }
 };
+
+// ================= GET CHANNEL VIDEOS =================
+export const getChannelVideos = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    oauth2Client.setCredentials({
+      refresh_token: user.refreshToken,
+    });
+
+    const youtube = google.youtube({
+      version: "v3",
+      auth: oauth2Client,
+    });
+
+    // get uploads playlist
+    const channel = await youtube.channels.list({
+      part: "contentDetails",
+      mine: true,
+    });
+
+    const uploadsPlaylistId =
+      channel.data.items[0].contentDetails
+        .relatedPlaylists.uploads;
+
+    // fetch videos
+    const videos = await youtube.playlistItems.list({
+      part: "snippet,contentDetails",
+      playlistId: uploadsPlaylistId,
+      maxResults: 10,
+    });
+
+    res.json({
+      message: "Channel videos fetched ✅",
+      videos: videos.data.items,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch videos",
+      error: error.message,
+    });
+  }
+};

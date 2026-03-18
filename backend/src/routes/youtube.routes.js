@@ -13,8 +13,11 @@
 
 import express from "express";
 import { uploadVideo, getDashboard } from "../controllers/youtube.controller.js";
+import { getVideoAnalytics } from "../controllers/youtube.analytics.controller.js";
 import { upload } from "../middlewares/upload.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { getChannelVideos } from "../controllers/youtube.controller.js";
+import { generateThumbnail } from "../services/thumbnail.service.js"
 
 const router = express.Router();
 
@@ -28,15 +31,6 @@ router.use(verifyJWT);
 /*
 ==================================================
 📤 Upload Video
-POST /api/youtube/video
-
-form-data:
-- video (file) ✅ required
-- thumbnail (file) ✅ optional
-- title (text)
-- description (text)
-- tags (comma separated)
-- privacyStatus (public/private/unlisted)
 ==================================================
 */
 router.post(
@@ -50,10 +44,43 @@ router.post(
 
 /*
 ==================================================
-📊 Dashboard Data
-GET /api/youtube/dashboard
+📊 Dashboard
 ==================================================
 */
 router.get("/dashboard", getDashboard);
+
+/*
+==================================================
+📈 Video Analytics
+==================================================
+*/
+router.get("/analytics/:videoId", getVideoAnalytics);
+
+router.get("/videos", getChannelVideos);
+
+router.post("/generate-thumbnail", async (req, res) => {
+  try {
+    const { title } = req.body;
+
+    if (!title) {
+      return res.status(400).json({
+        message: "Title is required",
+      });
+    }
+
+    const thumbnailPath = await generateThumbnail(title);
+
+    res.json({
+      message: "Thumbnail Generated ✅",
+      thumbnail: thumbnailPath   // 👈 IMPORTANT
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Thumbnail generation failed",
+      error: error.message,
+    });
+  }
+});
 
 export default router;
