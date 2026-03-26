@@ -135,9 +135,10 @@ export const googleCallback = async (req, res) => {
 
     // send cookie
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: false
-    });
+  httpOnly: true,
+  secure: false,
+  sameSite: "lax",
+});
 
     // redirect to frontend (later)
     res.redirect("http://localhost:5174/dashboard");
