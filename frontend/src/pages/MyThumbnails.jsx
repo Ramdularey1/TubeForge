@@ -21,9 +21,22 @@ const MyThumbnails = () => {
       "selectedThumbnail",
       JSON.stringify(thumb)
     );
-
-    // 🔥 redirect
     navigate("/upload");
+  };
+
+  // 🔥 DELETE FUNCTION
+  const deleteThumbnail = async (id) => {
+    try {
+      await API.delete(`/youtube/thumbnail/${id}`);
+
+      setThumbnails((prev) =>
+        prev.filter((thumb) => thumb._id !== id)
+      );
+
+    } catch (err) {
+      console.log(err);
+      alert("Delete failed");
+    }
   };
 
   return (
@@ -54,14 +67,23 @@ const MyThumbnails = () => {
               {thumb.title}
             </p>
 
-            <button
-              onClick={() =>
-                selectThumbnail(thumb)
-              }
-              className="bg-green-500 text-white px-3 py-1 mt-2 rounded w-full"
-            >
-              Use
-            </button>
+            <div className="flex gap-2 mt-2">
+
+              <button
+                onClick={() => selectThumbnail(thumb)}
+                className="bg-green-500 text-white px-3 py-1 rounded w-full"
+              >
+                Use
+              </button>
+
+              <button
+                onClick={() => deleteThumbnail(thumb._id)}
+                className="bg-red-600 text-white px-3 py-1 rounded w-full"
+              >
+                Delete
+              </button>
+
+            </div>
 
           </div>
         ))}

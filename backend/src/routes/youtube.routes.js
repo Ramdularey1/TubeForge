@@ -9,6 +9,8 @@ import { saveThumbnail } from "../controllers/youtube.controller.js";
 import { getThumbnail } from "../controllers/youtube.controller.js";
 import { saveVideo } from "../controllers/youtube.controller.js"; 
 import { getVideo } from "../controllers/youtube.controller.js";
+import { deleteThumbnail } from "../controllers/youtube.controller.js";
+import { deleteVideo } from "../controllers/youtube.controller.js";
 import { get } from "mongoose";
 
 const router = express.Router();
@@ -78,5 +80,7 @@ router.post(
   saveVideo
 );
 router.get("/fetch-video",getVideo)
+router.delete("/thumbnail/:id", deleteThumbnail);
+router.delete("/video/:id", deleteVideo);
 
 export default router;

@@ -16,14 +16,27 @@ const MyVideos = () => {
     setVideos(res.data);
   };
 
-  // 🔥 Use video
   const handleUse = (video) => {
     localStorage.setItem(
       "selectedVideo",
       JSON.stringify(video)
     );
+    navigate("/upload");
+  };
 
-    navigate("/upload"); // 🔥 redirect
+  // 🔥 DELETE FUNCTION
+  const deleteVideo = async (id) => {
+    try {
+      await API.delete(`/youtube/video/${id}`);
+
+      setVideos((prev) =>
+        prev.filter((video) => video._id !== id)
+      );
+
+    } catch (err) {
+      console.log(err);
+      alert("Delete failed");
+    }
   };
 
   return (
@@ -39,16 +52,8 @@ const MyVideos = () => {
 
           <div
             key={video._id}
-            className="border rounded p-3"
+            className="border rounded p-3 hover:shadow-lg transition"
           >
-
-            <img
-              src={
-                "http://localhost:8000" +
-                video.thumbnailUrl
-              }
-              className="w-full rounded"
-            />
 
             <h2 className="mt-2 font-semibold text-sm">
               {video.title}
@@ -66,13 +71,23 @@ const MyVideos = () => {
               />
             </video>
 
-            {/* 🔥 USE BUTTON */}
-            <button
-              onClick={() => handleUse(video)}
-              className="bg-green-600 text-white px-3 py-1 mt-2 rounded w-full"
-            >
-              Use
-            </button>
+            <div className="flex gap-2 mt-2">
+
+              <button
+                onClick={() => handleUse(video)}
+                className="bg-green-600 text-white px-3 py-1 rounded w-full"
+              >
+                Use
+              </button>
+
+              <button
+                onClick={() => deleteVideo(video._id)}
+                className="bg-red-600 text-white px-3 py-1 rounded w-full"
+              >
+                Delete
+              </button>
+
+            </div>
 
           </div>
         ))}

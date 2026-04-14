@@ -201,12 +201,12 @@ const Thumbnail = () => {
       formData.append("title", videoTitle);
       formData.append("description", videoTitle);
 
-      if (image) {
-        formData.append(
-          "thumbnailPath",
-          image.replace("http://localhost:8000", "")
-        );
-      }
+      // if (image) {
+      //   formData.append(
+      //     "thumbnailPath",
+      //     image.replace("http://localhost:8000", "")
+      //   );
+      // }
 
       await API.post("/youtube/save-video", formData, {
         headers: {

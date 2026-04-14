@@ -549,3 +549,78 @@ export const getVideo = async (req, res) => {
       });
     }
 }
+
+export const deleteThumbnail = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const thumbnail = await Thumbnail.findById(id);
+
+    if (!thumbnail) {
+      return res.status(404).json({
+        message: "Thumbnail not found",
+      });
+    }
+
+    // ✅ delete file from uploads
+    const filePath = thumbnail.imageUrl;
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    await Thumbnail.findByIdAndDelete(id);
+
+    res.json({
+      message: "Thumbnail deleted ✅",
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Delete failed",
+    });
+  }
+};
+
+export const deleteVideo = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const video = await Video.findById(id);
+
+    if (!video) {
+      return res.status(404).json({
+        message: "Video not found",
+      });
+    }
+
+    // ✅ delete video file
+    const videoPath = path.join(process.cwd(), video.videoUrl);
+
+    if (fs.existsSync(videoPath)) {
+      fs.unlinkSync(videoPath);
+    }
+
+    // ✅ delete thumbnail file (optional)
+    if (video.thumbnailUrl) {
+      const thumbPath = path.join(process.cwd(), video.thumbnailUrl);
+
+      if (fs.existsSync(thumbPath)) {
+        fs.unlinkSync(thumbPath);
+      }
+    }
+
+    await Video.findByIdAndDelete(id);
+
+    res.json({
+      message: "Video deleted ✅",
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Delete failed",
+    });
+  }
+};
