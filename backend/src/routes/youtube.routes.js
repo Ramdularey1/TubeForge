@@ -1,16 +1,3 @@
-// import express from "express";
-// // import { uploadVideo } from "../controllers/youtube.controller.js";
-// import { uploadVideo } from "../controllers/youtube.controller.js";
-// import { upload } from "../middlewares/upload.middleware.js";
-
-// const router = express.Router();
-
-// // "video" must match Postman key
-// router.post("/video", upload.single("video"), uploadVideo);
-
-// export default router;
-
-
 import express from "express";
 import { uploadVideo, getDashboard } from "../controllers/youtube.controller.js";
 import { getVideoAnalytics } from "../controllers/youtube.analytics.controller.js";
@@ -18,6 +5,11 @@ import { upload } from "../middlewares/upload.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { getChannelVideos } from "../controllers/youtube.controller.js";
 import { generateThumbnail } from "../services/thumbnail.service.js"
+import { saveThumbnail } from "../controllers/youtube.controller.js";
+import { getThumbnail } from "../controllers/youtube.controller.js";
+import { saveVideo } from "../controllers/youtube.controller.js"; 
+import { getVideo } from "../controllers/youtube.controller.js";
+import { get } from "mongoose";
 
 const router = express.Router();
 
@@ -59,28 +51,32 @@ router.get("/analytics/:videoId", getVideoAnalytics);
 router.get("/videos", getChannelVideos);
 
 router.post("/generate-thumbnail", async (req, res) => {
-  try {
-    const { title } = req.body;
 
-    if (!title) {
-      return res.status(400).json({
-        message: "Title is required",
-      });
-    }
+  console.log("🔥 ROUTE HIT");
 
-    const thumbnailPath = await generateThumbnail(title);
+  const { title } = req.body;
 
-    res.json({
-      message: "Thumbnail Generated ✅",
-      thumbnail: thumbnailPath   // 👈 IMPORTANT
-    });
+  const thumbnailPath =
+    await generateThumbnail(title);
 
-  } catch (error) {
-    res.status(500).json({
-      message: "Thumbnail generation failed",
-      error: error.message,
-    });
-  }
+  console.log("🔥 FROM SERVICE:", thumbnailPath);
+
+  res.json({
+    message: "Thumbnail Generated ✅",
+    thumbnailPath,
+  });
 });
+
+router.post("/save-thumbnail",saveThumbnail);
+
+router.get("/thumbnails", getThumbnail);
+// router.post("/save-video", saveVideo);
+router.post(
+  "/save-video",
+  verifyJWT,
+  upload.single("video"), // 🔥 MUST MATCH FRONTEND
+  saveVideo
+);
+router.get("/fetch-video",getVideo)
 
 export default router;

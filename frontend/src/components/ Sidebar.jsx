@@ -37,6 +37,12 @@ const Sidebar = () => {
         <Link to="/thumbnail" className="flex items-center gap-3 hover:text-red-500">
           <Video /> Thumbnail AI
         </Link>
+        <Link to="/my-thumbnails" className="flex items-center gap-3 hover:text-red-500">
+          <Video /> My Thumbnails
+        </Link>
+        <Link to = "/my-videos" className="flex items-center gap-3 hover:text-red-500">
+          <Video />Fetch Video
+        </Link>
 
         
 

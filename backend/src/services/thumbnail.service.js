@@ -6,43 +6,42 @@ import { v4 as uuidv4 } from "uuid";
 export const generateThumbnail = async (title) => {
   try {
 
-    // free image generator (stable)
-    const text = encodeURIComponent(title);
+    // 🔥 strong prompt (important)
+    const prompt = `YouTube thumbnail, bold text "${title}", bright colors, high contrast, cinematic lighting, viral style`;
 
     const url =
-      `https://dummyimage.com/1280x720/000/fff&text=${text}`;
+      `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1280&height=720`;
 
     const response = await axios.get(url, {
       responseType: "arraybuffer",
+      timeout: 15000,
     });
 
-    if (!fs.existsSync("uploads")) {
-      fs.mkdirSync("uploads");
+    const uploadDir = path.resolve("uploads");
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
     }
 
     const fileName = uuidv4() + ".png";
 
-    const filePath = path.join(
-      "uploads",
-      fileName
-    );
+    const filePath = path.join(uploadDir, fileName);
 
-    fs.writeFileSync(
-      filePath,
-      response.data
-    );
+    fs.writeFileSync(filePath, response.data);
 
     return `/uploads/${fileName}`;
 
   } catch (error) {
 
     console.log(
-      "THUMBNAIL ERROR",
+      "🔥 POLLINATIONS ERROR:",
       error.message
     );
 
-    throw new Error(
-      "Thumbnail generation failed"
-    );
+    throw new Error("Thumbnail generation failed");
   }
 };
+
+
+
+

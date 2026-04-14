@@ -7,6 +7,8 @@ import Videos from "./pages/Videos";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Analytics from "./pages/Analytics";
 import Thumbnail from "./pages/Thumbnail";
+import MyThumbnails from "./pages/MyThumbnails";
+import MyVideos from "./pages/MyVideos";
 
 function App() {
   return (
@@ -55,6 +57,23 @@ function App() {
     </ProtectedRoute>
   }
 />
+<Route
+  path="/my-thumbnails"
+  element={
+    <ProtectedRoute>
+      <MyThumbnails />
+    </ProtectedRoute>
+  }
+/> 
+<Route
+  path="/my-videos"
+  element={
+    <ProtectedRoute>
+      <MyVideos />
+    </ProtectedRoute>
+  }
+/>  
+
 
         <Route
           path="/upload"
