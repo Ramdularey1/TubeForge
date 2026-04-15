@@ -6,7 +6,13 @@ import { oauth2Client } from "../config/googleOauth.js";
 import { User } from "../models/user.model.js";
 import { Thumbnail } from "../models/Thumbnail.model.js";
 import { Video } from "../models/Video.model.js";
+import ffmpeg from "fluent-ffmpeg";
+import { v4 as uuidv4 } from "uuid";
+
+import ffprobePath from "ffprobe-static";
+import ffmpegPath from "ffmpeg-static";
 import path from "path";
+
 
 // export const uploadVideo = async (req, res) => {
 //   let videoPath = null;
@@ -490,32 +496,91 @@ export const getThumbnail = async (req, res) => {
     }
 }
 
+// export const saveVideo = async (req, res) => {
+//   try {
+
+//     console.log("🔥 SAVE VIDEO HIT");
+
+//     // ✅ Check file exists
+//     if (!req.file) {
+//       return res.status(400).json({
+//         message: "No video file uploaded",
+//       });
+//     }
+
+//     const { title, description, thumbnailPath } = req.body;
+
+//     // ✅ Save video path
+//     const videoPath = `/uploads/${req.file.filename}`;
+
+//     // ✅ Thumbnail (from frontend)
+//     const finalThumbnail = thumbnailPath || "";
+
+//     // 🔥 SAVE IN DB
+//     const video = await Video.create({
+//       user: req.user._id,
+//       title,
+//       description,
+//       videoUrl: videoPath,
+//       thumbnailUrl: finalThumbnail,
+//     });
+
+//     res.json({
+//       message: "Video saved successfully ✅",
+//       video,
+//     });
+
+//   } catch (error) {
+
+//     console.log("❌ ERROR:", error);
+
+//     res.status(500).json({
+//       message: "Upload failed",
+//     });
+//   }
+// };
+
 export const saveVideo = async (req, res) => {
   try {
-
     console.log("🔥 SAVE VIDEO HIT");
 
-    // ✅ Check file exists
-    if (!req.file) {
+    const { title, description, thumbnailPath, videoPath } = req.body;
+
+    let finalVideoPath = "";
+
+    // ======================
+    // ✅ CASE 1: FILE UPLOAD
+    // ======================
+    if (req.file) {
+      finalVideoPath = `/uploads/${req.file.filename}`;
+    }
+
+    // ======================
+    // ✅ CASE 2: EDITED VIDEO
+    // ======================
+    else if (videoPath) {
+      finalVideoPath = videoPath; // already in uploads
+    }
+
+    else {
       return res.status(400).json({
-        message: "No video file uploaded",
+        message: "No video provided",
       });
     }
 
-    const { title, description, thumbnailPath } = req.body;
-
-    // ✅ Save video path
-    const videoPath = `/uploads/${req.file.filename}`;
-
-    // ✅ Thumbnail (from frontend)
+    // ======================
+    // ✅ THUMBNAIL
+    // ======================
     const finalThumbnail = thumbnailPath || "";
 
+    // ======================
     // 🔥 SAVE IN DB
+    // ======================
     const video = await Video.create({
       user: req.user._id,
       title,
       description,
-      videoUrl: videoPath,
+      videoUrl: finalVideoPath,
       thumbnailUrl: finalThumbnail,
     });
 
@@ -525,7 +590,6 @@ export const saveVideo = async (req, res) => {
     });
 
   } catch (error) {
-
     console.log("❌ ERROR:", error);
 
     res.status(500).json({
@@ -533,6 +597,8 @@ export const saveVideo = async (req, res) => {
     });
   }
 };
+
+
 
 export const getVideo = async (req, res) => {
   try {
@@ -550,6 +616,41 @@ export const getVideo = async (req, res) => {
     }
 }
 
+// export const deleteThumbnail = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const thumbnail = await Thumbnail.findById(id);
+
+//     if (!thumbnail) {
+//       return res.status(404).json({
+//         message: "Thumbnail not found",
+//       });
+//     }
+
+//     // ✅ delete file from uploads
+//     const filePath = thumbnail.imageUrl;
+
+//     if (fs.existsSync(filePath)) {
+//       fs.unlinkSync(filePath);
+//     }
+
+//     await Thumbnail.findByIdAndDelete(id);
+
+//     res.json({
+//       message: "Thumbnail deleted ✅",
+//     });
+
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({
+//       message: "Delete failed",
+//     });
+//   }
+// };
+
+
+
 export const deleteThumbnail = async (req, res) => {
   try {
     const { id } = req.params;
@@ -562,17 +663,29 @@ export const deleteThumbnail = async (req, res) => {
       });
     }
 
-    // ✅ delete file from uploads
-    const filePath = thumbnail.imageUrl;
+    // ✅ Convert relative path → absolute path
+    const filePath = path.join(
+      process.cwd(),
+      thumbnail.imageUrl
+    );
 
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    // ✅ Delete file from uploads
+    try {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log("🗑 Thumbnail deleted:", filePath);
+      } else {
+        console.log("⚠️ File not found:", filePath);
+      }
+    } catch (err) {
+      console.log("File delete error:", err.message);
     }
 
+    // ✅ Delete from DB
     await Thumbnail.findByIdAndDelete(id);
 
     res.json({
-      message: "Thumbnail deleted ✅",
+      message: "Thumbnail deleted successfully ✅",
     });
 
   } catch (error) {
@@ -582,6 +695,7 @@ export const deleteThumbnail = async (req, res) => {
     });
   }
 };
+
 
 export const deleteVideo = async (req, res) => {
   try {
@@ -624,3 +738,257 @@ export const deleteVideo = async (req, res) => {
     });
   }
 };
+
+
+ffmpeg.setFfmpegPath(ffmpegPath);
+ffmpeg.setFfprobePath(ffprobePath.path);
+export const editVideo = async (req, res) => {
+  let tempInputPath = null;
+
+  try {
+    let { start, end } = req.body;
+
+    start = Number(start);
+    end = Number(end);
+
+    if (isNaN(start) || isNaN(end) || end <= start) {
+      return res.status(400).json({
+        message: "Invalid trim range",
+      });
+    }
+
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    let inputPath;
+
+    // ✅ uploaded file
+    if (req.file) {
+      inputPath = req.file.path;
+      tempInputPath = req.file.path;
+    }
+
+    // ✅ DB video
+    else if (req.body.videoPath) {
+      inputPath = path.join(
+        process.cwd(),
+        req.body.videoPath.replace(/^\/+/, "")
+      );
+    }
+
+    else {
+      return res.status(400).json({
+        message: "Video required",
+      });
+    }
+
+    const uploadDir = path.join(process.cwd(), "uploads");
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+
+    const outputFileName = `${uuidv4()}.mp4`;
+    const outputPath = path.join(uploadDir, outputFileName);
+
+    const duration = end - start;
+
+    ffmpeg(inputPath)
+      .setStartTime(start)
+      .setDuration(duration)
+      .output(outputPath)
+      .on("end", () => {
+        console.log("✅ Video trimmed");
+
+        // 🔥 ONLY RETURN PATH
+        res.json({
+          message: "Trim success",
+          videoPath: `/uploads/${outputFileName}`,
+        });
+
+        // cleanup temp upload
+        if (tempInputPath && fs.existsSync(tempInputPath)) {
+          fs.unlinkSync(tempInputPath);
+        }
+      })
+      .on("error", (err) => {
+        console.log("FFmpeg ERROR:", err);
+
+        res.status(500).json({
+          message: "Edit failed",
+          error: err.message,
+        });
+      })
+      .run();
+
+  } catch (error) {
+    console.log(error);
+
+    if (tempInputPath && fs.existsSync(tempInputPath)) {
+      fs.unlinkSync(tempInputPath);
+    }
+
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+
+export const changeSpeed = async (req, res) => {
+  try {
+    const { speed, videoPath } = req.body;
+
+    let inputPath;
+
+    // ======================
+    // ✅ CASE 1: FILE
+    // ======================
+    if (req.file) {
+      inputPath = req.file.path;
+    }
+
+    // ======================
+    // ✅ CASE 2: EXISTING VIDEO
+    // ======================
+    else if (videoPath) {
+      inputPath = path.join(
+        process.cwd(),
+        videoPath.replace(/^\/+/, "")
+      );
+    }
+
+    else {
+      return res.status(400).json({
+        message: "Video required",
+      });
+    }
+
+    const outputFileName = `${uuidv4()}.mp4`;
+    const outputPath = path.join("uploads", outputFileName);
+
+    ffmpeg(inputPath)
+      .videoFilters(`setpts=${1 / speed}*PTS`)
+      .audioFilters(`atempo=${speed}`)
+      .output(outputPath)
+      .on("end", () => {
+        res.json({
+          message: "Speed updated ✅",
+          videoPath: `/uploads/${outputFileName}`,
+        });
+      })
+      .on("error", (err) => {
+        console.log(err);
+        res.status(500).json({
+          message: "Speed change failed",
+        });
+      })
+      .run();
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+
+export const mergeVideos = async (req, res) => {
+  try {
+    const files = req.files;
+
+    if (!files || files.length < 2) {
+      return res.status(400).json({
+        message: "At least 2 videos required",
+      });
+    }
+
+    const outputFileName = `${uuidv4()}.mp4`;
+    const outputPath = path.join("uploads", outputFileName);
+
+    const command = ffmpeg();
+
+    files.forEach(file => {
+      command.input(file.path);
+    });
+
+    command
+      .on("end", () => {
+        res.json({
+          message: "Merged ✅",
+          videoPath: `/uploads/${outputFileName}`,
+        });
+      })
+      .on("error", (err) => {
+        console.log(err);
+        res.status(500).json({ message: "Merge failed" });
+      })
+      .mergeToFile(outputPath);
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+// export const editVideo = async (req, res) => {
+//   try {
+//     const videoFile = req.file;
+
+//     const { start, end } = req.body;
+
+//     if (!videoFile) {
+//       return res.status(400).json({
+//         message: "Video required",
+//       });
+//     }
+
+//     const inputPath = videoFile.path;
+
+//     const outputFileName = `${uuidv4()}.mp4`;
+//     const outputPath = path.join("uploads", outputFileName);
+
+//     const duration = end - start;
+
+//     // 🎬 Trim using FFmpeg
+//     ffmpeg(inputPath)
+//       .setStartTime(start)
+//       .setDuration(duration)
+//       .output(outputPath)
+//       .on("end", async () => {
+//         console.log("✅ Video trimmed");
+
+//         // 💾 Save in DB
+//         const savedVideo = await Video.create({
+//           title: "Edited Video",
+//           videoUrl: outputPath,
+//         });
+
+//         // 🧹 delete original
+//         fs.unlinkSync(inputPath);
+
+//         res.json({
+//           message: "Video edited & saved ✅",
+//           video: savedVideo,
+//         });
+//       })
+//       .on("error", (err) => {
+//         console.log("FFmpeg error:", err);
+//         res.status(500).json({
+//           message: "Edit failed",
+//         });
+//       })
+//       .run();
+
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({
+//       message: "Server error",
+//     });
+//   }
+// };

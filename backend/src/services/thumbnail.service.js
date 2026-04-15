@@ -5,12 +5,10 @@ import { v4 as uuidv4 } from "uuid";
 
 export const generateThumbnail = async (title) => {
   try {
-
     // 🔥 strong prompt (important)
     const prompt = `YouTube thumbnail, bold text "${title}", bright colors, high contrast, cinematic lighting, viral style`;
 
-    const url =
-      `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1280&height=720`;
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1280&height=720`;
 
     const response = await axios.get(url, {
       responseType: "arraybuffer",
@@ -30,18 +28,9 @@ export const generateThumbnail = async (title) => {
     fs.writeFileSync(filePath, response.data);
 
     return `/uploads/${fileName}`;
-
   } catch (error) {
-
-    console.log(
-      "🔥 POLLINATIONS ERROR:",
-      error.message
-    );
+    console.log("🔥 POLLINATIONS ERROR:", error.message);
 
     throw new Error("Thumbnail generation failed");
   }
 };
-
-
-
-

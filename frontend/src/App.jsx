@@ -9,6 +9,7 @@ import Analytics from "./pages/Analytics";
 import Thumbnail from "./pages/Thumbnail";
 import MyThumbnails from "./pages/MyThumbnails";
 import MyVideos from "./pages/MyVideos";
+import EditVideo from "./pages/EditVideo";
 
 function App() {
   return (
@@ -70,6 +71,14 @@ function App() {
   element={
     <ProtectedRoute>
       <MyVideos />
+    </ProtectedRoute>
+  }
+/>  
+<Route
+  path="edit-video"
+  element={
+    <ProtectedRoute>
+      <EditVideo />
     </ProtectedRoute>
   }
 />  

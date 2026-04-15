@@ -11,6 +11,10 @@ import { saveVideo } from "../controllers/youtube.controller.js";
 import { getVideo } from "../controllers/youtube.controller.js";
 import { deleteThumbnail } from "../controllers/youtube.controller.js";
 import { deleteVideo } from "../controllers/youtube.controller.js";
+import { editVideo } from "../controllers/youtube.controller.js";
+import { mergeVideos } from "../controllers/youtube.controller.js";
+import { changeSpeed } from "../controllers/youtube.controller.js";
+
 import { get } from "mongoose";
 
 const router = express.Router();
@@ -82,5 +86,15 @@ router.post(
 router.get("/fetch-video",getVideo)
 router.delete("/thumbnail/:id", deleteThumbnail);
 router.delete("/video/:id", deleteVideo);
+
+router.post(
+  "/video/edit",
+  verifyJWT, // 🔥 ADD THIS (VERY IMPORTANT)
+  upload.single("video"),
+  editVideo
+);
+
+router.post("/video/merge", upload.array("videos"), mergeVideos);
+router.post("/video/speed", upload.single("video"), changeSpeed);
 
 export default router;
