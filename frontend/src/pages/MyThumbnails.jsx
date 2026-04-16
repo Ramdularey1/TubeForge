@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 const MyThumbnails = () => {
   const [thumbnails, setThumbnails] = useState([]);
@@ -40,6 +41,7 @@ const MyThumbnails = () => {
   };
 
   return (
+    <DashboardLayout>
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
       {/* Header */}
@@ -125,6 +127,7 @@ const MyThumbnails = () => {
 
       </div>
     </div>
+    </DashboardLayout>
   );
 };
 
