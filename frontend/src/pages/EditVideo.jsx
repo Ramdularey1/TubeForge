@@ -11,6 +11,7 @@ const EditVideo = () => {
 
   const [videos, setVideos] = useState([]);
   const [mergePreview, setMergePreview] = useState(null);
+  const [mergedVideo, setMergedVideo] = useState(null);
 
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
@@ -143,63 +144,86 @@ const EditVideo = () => {
     }
   };
 
-  // Merge
+
+
   const handleMerge = async () => {
-    try {
-      if (videos.length < 2) {
-        alert("Select at least 2 videos");
-        return;
-      }
-
-      setMergeLoading(true);
-
-      const formData = new FormData();
-
-      videos.forEach((v) => {
-        formData.append("videos", v);
-      });
-
-      const res = await API.post("/youtube/video/merge", formData);
-
-      const newVideo = res.data.videoPath;
-
-      const url =
-        "http://localhost:8000" + newVideo + "?t=" + Date.now();
-
-      setMergePreview(url);
-
-      alert("Merged successfully ✅");
-
-    } catch (err) {
-      console.log(err);
-      alert("Merge failed");
-    } finally {
-      setMergeLoading(false);
+  try {
+    if (videos.length < 2) {
+      alert("Select at least 2 videos");
+      return;
     }
-  };
 
-  // Save
+    setMergeLoading(true);
+
+    const formData = new FormData();
+
+    videos.forEach((v) => {
+      formData.append("videos", v);
+    });
+
+    const res = await API.post("/youtube/video/merge", formData);
+
+    const newVideo = res.data.videoPath;
+
+    const url =
+      "http://localhost:8000" + newVideo + "?t=" + Date.now();
+
+    setMergePreview(url);
+    setMergedVideo(newVideo); // ✅ FIX
+
+    alert("Merged successfully ✅");
+
+  } catch (err) {
+    console.log(err);
+    alert("Merge failed");
+  } finally {
+    setMergeLoading(false);
+  }
+};
+
+
+
+
+
+
+
   const handleSave = async () => {
-    try {
-      if (!trimmedVideo) {
-        alert("No edited video to save");
-        return;
-      }
+  try {
+    let videoToSave = null;
+    let title = "";
 
-      await API.post("/youtube/save-video", {
-        videoPath: trimmedVideo,
-        title: "Edited Video",
-      });
-
-      alert("Saved successfully ✅");
-
-      navigate("/my-videos");
-
-    } catch (err) {
-      console.log(err);
-      alert("Save failed");
+    // 🔥 First priority → merged video
+    if (mergedVideo) {
+      videoToSave = mergedVideo;
+      title = "Merged Video";
     }
-  };
+
+    // 🔥 Otherwise → trimmed/speed video
+    else if (trimmedVideo) {
+      videoToSave = trimmedVideo;
+      title = "Edited Video";
+    }
+
+    else {
+      alert("No video to save");
+      return;
+    }
+
+    await API.post("/youtube/save-video", {
+      videoPath: videoToSave,
+      title,
+    });
+
+    alert("Saved successfully ✅");
+    navigate("/my-videos");
+
+  } catch (err) {
+    console.log(err);
+    alert("Save failed");
+  }
+};
+
+
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-8">
@@ -338,6 +362,15 @@ const EditVideo = () => {
             </video>
           )}
 
+            {mergePreview && (
+            <button
+              onClick={handleSave}
+              className="bg-blue-600 text-white px-4 py-2 mt-4 rounded w-full"
+            >
+              Save Video
+            </button>
+          )}
+
         </div>
 
       </div>
@@ -347,3 +380,6 @@ const EditVideo = () => {
 };
 
 export default EditVideo;
+
+
+

@@ -1,3 +1,89 @@
+// import DashboardLayout from "../layouts/DashboardLayout";
+// import StatsCard from "../components/StatsCard";
+// import AnalyticsChart from "../components/AnalyticsChart";
+// import RecentVideosTable from "../components/RecentVideosTable";
+
+// import { useEffect, useState } from "react";
+// import { getDashboard } from "../api/youtube";
+
+// const Dashboard = () => {
+//   const [data, setData] = useState(null);
+
+//   useEffect(() => {
+//     fetchDashboard();
+//   }, []);
+
+//   const fetchDashboard = async () => {
+//     try {
+//       const res = await getDashboard();
+
+//       console.log(res);
+
+//       setData(res);
+
+//     } catch (err) {
+//       console.log(err);
+//     }
+//   };
+
+//   if (!data) return <div>Loading...</div>;
+
+//   const channel = data.channel;
+//   const videos = data.videos;
+
+//   console.log(channel);
+//   return (
+//     <DashboardLayout>
+
+//       <h1 className="text-2xl font-bold mb-6">
+//         Dashboard
+//       </h1>
+
+//       {/* Stats */}
+
+//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+//         <StatsCard
+//           title="Views"
+//           value={channel.views}
+//           type="views"
+//         />
+
+//         <StatsCard
+//           title="Subscribers"
+//           value={channel.subscribers}
+//           type="subs"
+//         />
+
+//         <StatsCard
+//           title="Videos"
+//           value={channel.totalVideos}
+//           type="videos"
+//         />
+
+//         <StatsCard
+//           title="Channel"
+//           value={channel.title}
+//           type="comments"
+//         />
+
+//       </div>
+
+//       {/* Charts */}
+
+//       <AnalyticsChart />
+
+//       {/* Table */}
+
+//       <RecentVideosTable videos={videos} />
+
+//     </DashboardLayout>
+//   );
+// };
+
+// export default Dashboard;
+
+
 import DashboardLayout from "../layouts/DashboardLayout";
 import StatsCard from "../components/StatsCard";
 import AnalyticsChart from "../components/AnalyticsChart";
@@ -16,69 +102,92 @@ const Dashboard = () => {
   const fetchDashboard = async () => {
     try {
       const res = await getDashboard();
-
-      console.log(res);
-
       setData(res);
-
     } catch (err) {
       console.log(err);
     }
   };
 
-  if (!data) return <div>Loading...</div>;
+  // 🔥 Loading UI
+  if (!data)
+    return (
+      <DashboardLayout>
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 w-40 bg-zinc-800 rounded-lg" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="h-28 rounded-2xl bg-zinc-900 border border-zinc-800"
+              />
+            ))}
+          </div>
+
+          <div className="h-64 bg-zinc-900 rounded-2xl border border-zinc-800" />
+        </div>
+      </DashboardLayout>
+    );
 
   const channel = data.channel;
   const videos = data.videos;
 
-  console.log(channel);
   return (
     <DashboardLayout>
+      {/* 🔥 IMPORTANT: spacing handled here */}
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Dashboard
+          </h1>
 
-      <h1 className="text-2xl font-bold mb-6">
-        Dashboard
-      </h1>
+          <p className="text-sm text-zinc-400">
+            Welcome back 👋 Here’s your channel overview
+          </p>
+        </div>
 
-      {/* Stats */}
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+          <StatsCard title="Views" value={channel.views} type="views" />
+          <StatsCard
+            title="Subscribers"
+            value={channel.subscribers}
+            type="subs"
+          />
+          <StatsCard
+            title="Videos"
+            value={channel.totalVideos}
+            type="videos"
+          />
+          <StatsCard
+            title="Channel"
+            value={channel.title}
+            type="comments"
+          />
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Charts */}
+        <div className="bg-zinc-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6">
+          <h2 className="text-lg font-semibold mb-4">
+            Analytics Overview
+          </h2>
 
-        <StatsCard
-          title="Views"
-          value={channel.views}
-          type="views"
-        />
+          <AnalyticsChart />
+        </div>
 
-        <StatsCard
-          title="Subscribers"
-          value={channel.subscribers}
-          type="subs"
-        />
+        {/* Table */}
+        <div className="bg-zinc-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6">
+          <h2 className="text-lg font-semibold mb-4">
+            Recent Videos
+          </h2>
 
-        <StatsCard
-          title="Videos"
-          value={channel.totalVideos}
-          type="videos"
-        />
-
-        <StatsCard
-          title="Channel"
-          value={channel.title}
-          type="comments"
-        />
-
+          <RecentVideosTable videos={videos} />
+        </div>
       </div>
-
-      {/* Charts */}
-
-      <AnalyticsChart />
-
-      {/* Table */}
-
-      <RecentVideosTable videos={videos} />
-
     </DashboardLayout>
   );
 };
 
 export default Dashboard;
+

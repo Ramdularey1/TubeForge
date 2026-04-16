@@ -110,13 +110,11 @@
 // export default Thumbnail;
 
 
-
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useState } from "react";
 import API from "../api/axios";
 
 const Thumbnail = () => {
-  // 🔥 separate states
   const [thumbnailTitle, setThumbnailTitle] = useState("");
   const [videoTitle, setVideoTitle] = useState("");
 
@@ -129,14 +127,13 @@ const Thumbnail = () => {
 
   const [saved, setSaved] = useState(false);
 
-  // 🔥 Generate thumbnail
   const generateThumbnail = async () => {
-    try {
-      if (!thumbnailTitle) {
-        alert("Please enter thumbnail title");
-        return;
-      }
+    if (!thumbnailTitle) {
+      alert("Please enter thumbnail title");
+      return;
+    }
 
+    try {
       setLoading(true);
       setSaved(false);
 
@@ -145,12 +142,7 @@ const Thumbnail = () => {
         { title: thumbnailTitle }
       );
 
-      const imageUrl =
-        "http://localhost:8000" +
-        res.data.thumbnailPath;
-
-      setImage(imageUrl);
-
+      setImage("http://localhost:8000" + res.data.thumbnailPath);
     } catch (err) {
       console.log(err);
     } finally {
@@ -158,21 +150,16 @@ const Thumbnail = () => {
     }
   };
 
-  // 🔥 Save thumbnail
   const saveThumbnail = async () => {
     try {
       setSaving(true);
 
       await API.post("/youtube/save-thumbnail", {
         title: thumbnailTitle,
-        imageUrl: image.replace(
-          "http://localhost:8000",
-          ""
-        ),
+        imageUrl: image.replace("http://localhost:8000", ""),
       });
 
       setSaved(true);
-
     } catch (err) {
       console.log(err);
     } finally {
@@ -180,48 +167,25 @@ const Thumbnail = () => {
     }
   };
 
-  // 🔥 Save video
   const saveVideo = async () => {
+    if (!video) return alert("Please select a video");
+    if (!videoTitle) return alert("Please enter video title");
+
     try {
-      if (!video) {
-        alert("Please select a video");
-        return;
-      }
-
-      if (!videoTitle) {
-        alert("Please enter video title");
-        return;
-      }
-
       setSavingVideo(true);
 
       const formData = new FormData();
-
       formData.append("video", video);
       formData.append("title", videoTitle);
       formData.append("description", videoTitle);
 
-      // if (image) {
-      //   formData.append(
-      //     "thumbnailPath",
-      //     image.replace("http://localhost:8000", "")
-      //   );
-      // }
+      await API.post("/youtube/save-video", formData);
 
-      await API.post("/youtube/save-video", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      alert("Video saved in backend ✅");
-
+      alert("Video saved ✅");
       setVideo(null);
       setVideoTitle("");
-
     } catch (err) {
       console.log(err);
-      alert("Save failed");
     } finally {
       setSavingVideo(false);
     }
@@ -231,123 +195,123 @@ const Thumbnail = () => {
     const link = document.createElement("a");
     link.href = image;
     link.download = "thumbnail.png";
-    document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
   };
 
   return (
     <DashboardLayout>
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-6 space-y-6">
 
-      <h1 className="text-2xl font-bold mb-6">
-        AI Thumbnail Generator
-      </h1>
-
-      <div className="grid grid-cols-2 gap-6">
-
-        {/* ================= LEFT: THUMBNAIL ================= */}
-        <div className="bg-white p-6 rounded-xl shadow">
-
-          <h2 className="font-semibold mb-4">
-            Generate Thumbnail
-          </h2>
-
-          <input
-            type="text"
-            placeholder="Enter thumbnail title"
-            className="border p-2 w-full mb-4"
-            value={thumbnailTitle}
-            onChange={(e) => setThumbnailTitle(e.target.value)}
-          />
-
-          <button
-            onClick={generateThumbnail}
-            className="bg-red-600 text-white px-4 py-2 rounded"
-            disabled={loading}
-          >
-            {loading ? "Generating..." : "Generate"}
-          </button>
-
-          {image && (
-            <div className="mt-6">
-
-              <img
-                src={image}
-                alt="thumbnail"
-                className="w-full rounded shadow"
-              />
-
-              <div className="flex gap-3 mt-4">
-
-                <button
-                  onClick={downloadImage}
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
-                >
-                  Download
-                </button>
-
-                <button
-                  onClick={saveThumbnail}
-                  className="bg-green-600 text-white px-4 py-2 rounded"
-                  disabled={saving}
-                >
-                  {saving ? "Saving..." : "Save"}
-                </button>
-
-              </div>
-
-              {saved && (
-                <p className="text-green-600 mt-2">
-                  Saved ✅
-                </p>
-              )}
-
-            </div>
-          )}
-
+        {/* Header */}
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold">
+            AI Thumbnail Generator
+          </h1>
+          <p className="text-sm text-zinc-400">
+            Generate thumbnails & save videos
+          </p>
         </div>
 
-        {/* ================= RIGHT: VIDEO ================= */}
-        <div className="bg-white p-6 rounded-xl shadow">
+        {/* 🔥 Responsive Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-          <h2 className="font-semibold mb-4">
-            Save Video
-          </h2>
+          {/* LEFT */}
+          <div className="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 sm:p-6 space-y-4">
 
-          {/* ✅ VIDEO TITLE INPUT */}
-          <input
-            type="text"
-            placeholder="Enter video title"
-            className="border p-2 w-full mb-4"
-            value={videoTitle}
-            onChange={(e) => setVideoTitle(e.target.value)}
-          />
+            <h2 className="font-semibold text-lg">
+              Generate Thumbnail
+            </h2>
 
-          <input
-            type="file"
-            onChange={(e) =>
-              setVideo(e.target.files[0])
-            }
-          />
+            <input
+              type="text"
+              placeholder="Enter thumbnail title"
+              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 outline-none focus:border-red-500"
+              value={thumbnailTitle}
+              onChange={(e) => setThumbnailTitle(e.target.value)}
+            />
 
-          <br /><br />
+            <button
+              onClick={generateThumbnail}
+              disabled={loading}
+              className="w-full bg-red-600 hover:bg-red-500 py-2 rounded-xl transition"
+            >
+              {loading ? "Generating..." : "Generate"}
+            </button>
 
-          <button
-            onClick={saveVideo}
-            disabled={!video || savingVideo}
-            className="bg-purple-600 text-white px-4 py-2 rounded w-full"
-          >
-            {savingVideo ? "Saving..." : "Save Video"}
-          </button>
+            {image && (
+              <div className="space-y-4">
 
-          <p className="text-gray-500 text-sm mt-2">
-            Title is required.
-          </p>
+                <img
+                  src={image}
+                  alt="thumbnail"
+                  className="w-full rounded-xl"
+                />
+
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={downloadImage}
+                    className="bg-blue-500 hover:bg-blue-400 py-2 rounded-xl"
+                  >
+                    Download
+                  </button>
+
+                  <button
+                    onClick={saveThumbnail}
+                    disabled={saving}
+                    className="bg-green-600 hover:bg-green-500 py-2 rounded-xl"
+                  >
+                    {saving ? "Saving..." : "Save"}
+                  </button>
+                </div>
+
+                {saved && (
+                  <p className="text-green-500 text-sm">
+                    Saved successfully ✅
+                  </p>
+                )}
+
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT */}
+          <div className="bg-zinc-900/60 border border-white/10 rounded-2xl p-4 sm:p-6 space-y-4">
+
+            <h2 className="font-semibold text-lg">
+              Save Video
+            </h2>
+
+            <input
+              type="text"
+              placeholder="Enter video title"
+              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2"
+              value={videoTitle}
+              onChange={(e) => setVideoTitle(e.target.value)}
+            />
+
+            <input
+              type="file"
+              className="w-full text-sm"
+              onChange={(e) => setVideo(e.target.files[0])}
+            />
+
+            <button
+              onClick={saveVideo}
+              disabled={!video || savingVideo}
+              className="w-full bg-purple-600 hover:bg-purple-500 py-2 rounded-xl"
+            >
+              {savingVideo ? "Saving..." : "Save Video"}
+            </button>
+
+            <p className="text-xs text-zinc-400">
+              Title is required before saving.
+            </p>
+
+          </div>
 
         </div>
 
       </div>
-
     </DashboardLayout>
   );
 };
