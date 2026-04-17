@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
+
 const VideoCard = ({ video }) => {
   const snippet = video.snippet;
 
@@ -8,14 +9,13 @@ const VideoCard = ({ video }) => {
   const videoId =
     video?.contentDetails?.videoId;
 
-  const handleClick = () => {
-    navigate(`/analytics/${videoId}`);
-  };
+ 
 
   return (
+    
     <div
-      onClick={handleClick}
-      className="bg-white rounded-xl shadow hover:shadow-lg hover:scale-105 transition cursor-pointer"
+      
+      className="bg-white rounded-xl shadow hover:shadow-lg hover:scale-105 transition "
     >
       {/* Thumbnail */}
 
@@ -41,11 +41,12 @@ const VideoCard = ({ video }) => {
         {/* Button */}
 
         <button
+        className="mt-2 text-xs cursor-pointer  bg-red-500 text-white px-2 py-2 rounded"
           onClick={(e) => {
             e.stopPropagation();
             navigate(`/analytics/${videoId}`);
           }}
-          className="mt-2 text-xs bg-red-500 text-white px-2 py-1 rounded"
+         
         >
           View Analytics
         </button>

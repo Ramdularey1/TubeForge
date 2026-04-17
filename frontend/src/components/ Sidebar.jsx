@@ -1,9 +1,10 @@
 import {
-  Home,
   LayoutDashboard,
-  Video,
-  BarChart,
-  Settings,
+  Upload,
+  Youtube,
+  Image,
+  Images,
+  Clapperboard,
 } from "lucide-react";
 
 import { Link } from "react-router-dom";
@@ -16,42 +17,36 @@ const Sidebar = () => {
         TubeForge
       </h1>
 
-      <nav className="space-y-4">
+      <nav className="space-y-6">
 
-        <Link to="/dashboard" className="flex items-center gap-3 hover:text-red-500">
-          <Home /> Home
+        <Link to="/dashboard" className="flex items-center gap-3 hover:text-red-500 transition">
+          <LayoutDashboard size={20} />
+          Dashboard
         </Link>
 
-        <Link to="/dashboard" className="flex items-center gap-3 hover:text-red-500">
-          <LayoutDashboard /> Dashboard
+        <Link to="/upload" className="flex items-center gap-3 hover:text-red-500 transition">
+          <Upload size={20} />
+          Upload Your Video
         </Link>
 
-        <Link to="/upload" className="flex items-center gap-3 hover:text-red-500">
-          <Video /> Upload
+        <Link to="/videos" className="flex items-center gap-3 hover:text-red-500 transition">
+          <Youtube size={20} />
+          My YouTube Videos
         </Link>
 
-        <Link to="/videos" className="flex items-center gap-3 hover:text-red-500">
-          <Video /> My Videos
+        <Link to="/thumbnail" className="flex items-center gap-3 hover:text-red-500 transition">
+          <Image size={20} />
+          Thumbnail AI
         </Link>
 
-        <Link to="/thumbnail" className="flex items-center gap-3 hover:text-red-500">
-          <Video /> Thumbnail AI
-        </Link>
-        <Link to="/my-thumbnails" className="flex items-center gap-3 hover:text-red-500">
-          <Video /> My Thumbnails
-        </Link>
-        <Link to = "/my-videos" className="flex items-center gap-3 hover:text-red-500">
-          <Video />Fetch Video
+        <Link to="/my-thumbnails" className="flex items-center gap-3 hover:text-red-500 transition">
+          <Images size={20} />
+          My Thumbnails
         </Link>
 
-        
-
-        <Link to="/analytics" className="flex items-center gap-3 hover:text-red-500">
-          <BarChart /> Analytics
-        </Link>
-
-        <Link to="/settings" className="flex items-center gap-3 hover:text-red-500">
-          <Settings /> Settings
+        <Link to="/my-videos" className="flex items-center gap-3 hover:text-red-500 transition">
+          <Clapperboard size={20} />
+          Recorded Videos
         </Link>
 
       </nav>

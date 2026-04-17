@@ -14,6 +14,7 @@ import { deleteVideo } from "../controllers/youtube.controller.js";
 import { editVideo } from "../controllers/youtube.controller.js";
 import { mergeVideos } from "../controllers/youtube.controller.js";
 import { changeSpeed } from "../controllers/youtube.controller.js";
+import { getChannelAnalytics } from "../controllers/youtube.analytics.controller.js";
 
 import { get } from "mongoose";
 
@@ -96,5 +97,6 @@ router.post(
 
 router.post("/video/merge", upload.array("videos"), mergeVideos);
 router.post("/video/speed", upload.single("video"), changeSpeed);
+router.get("/channel-analytics", verifyJWT, getChannelAnalytics);
 
 export default router;

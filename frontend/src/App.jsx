@@ -14,9 +14,7 @@ import EditVideo from "./pages/EditVideo";
 function App() {
   return (
     <BrowserRouter>
-
       <Routes>
-
         {/* Public */}
 
         <Route path="/" element={<Landing />} />
@@ -33,56 +31,55 @@ function App() {
         />
 
         <Route
-  path="/analytics/:id"
-  element={
-    <ProtectedRoute>
-      <Analytics />
-    </ProtectedRoute>
-  }
-/>
+          path="/analytics/:id"
+          element={
+            <ProtectedRoute>
+              <Analytics />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
-  path="/videos"
-  element={
-    <ProtectedRoute>
-      <Videos />
-    </ProtectedRoute>
-  }
-/>
+          path="/videos"
+          element={
+            <ProtectedRoute>
+              <Videos />
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-  path="/thumbnail"
-  element={
-    <ProtectedRoute>
-      <Thumbnail />
-    </ProtectedRoute>
-  }
-/>
-<Route
-  path="/my-thumbnails"
-  element={
-    <ProtectedRoute>
-      <MyThumbnails />
-    </ProtectedRoute>
-  }
-/> 
-<Route
-  path="/my-videos"
-  element={
-    <ProtectedRoute>
-      <MyVideos />
-    </ProtectedRoute>
-  }
-/>  
-<Route
-  path="edit-video"
-  element={
-    <ProtectedRoute>
-      <EditVideo />
-    </ProtectedRoute>
-  }
-/>  
-
+        <Route
+          path="/thumbnail"
+          element={
+            <ProtectedRoute>
+              <Thumbnail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-thumbnails"
+          element={
+            <ProtectedRoute>
+              <MyThumbnails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-videos"
+          element={
+            <ProtectedRoute>
+              <MyVideos />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="edit-video"
+          element={
+            <ProtectedRoute>
+              <EditVideo />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/upload"
@@ -92,9 +89,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-
       </Routes>
-
     </BrowserRouter>
   );
 }

@@ -88,3 +88,33 @@ export const googleCallback = async (req, res) => {
     res.send("Authentication Failed");
   }
 };
+
+export const fetchUser = async (req, res) => {
+  try {
+    const user = req.user;
+     console.log("🔥 FETCH USER:",user);
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      picture: user.picture
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const logout = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+
+  res.status(200).json({
+    message: "Logged out successfully",
+  });
+};
+
