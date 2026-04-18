@@ -1,5 +1,3 @@
-
-// import { oauth2Client } from "../config/googleOauth.js";
 import {oauth2Client} from "../server.js"
 import { google } from "googleapis";
 import jwt from "jsonwebtoken";
