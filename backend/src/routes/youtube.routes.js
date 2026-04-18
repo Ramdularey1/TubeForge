@@ -76,7 +76,7 @@ router.post("/generate-thumbnail", async (req, res) => {
 
 router.post("/save-thumbnail", verifyJWT, saveThumbnail);
 
-router.get("/thumbnails", getThumbnail);
+router.get("/thumbnails",verifyJWT, getThumbnail);
 // router.post("/save-video", saveVideo);
 router.post(
   "/save-video",
