@@ -105,7 +105,7 @@ export const googleCallback = async (req, res) => {
 });
 
     // redirect to frontend (later)
-    res.redirect("http://localhost:5174/dashboard");
+    res.redirect("https://tube-forge-2ck1s47vw-ram-dulareys-projects.vercel.app/dashboard");
 
   } catch (error) {
     console.log(error);
