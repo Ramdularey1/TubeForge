@@ -80,7 +80,7 @@ router.get("/thumbnails", getThumbnail);
 // router.post("/save-video", saveVideo);
 router.post(
   "/save-video",
-  verifyJWT,
+ 
   upload.single("video"), // 🔥 MUST MATCH FRONTEND
   saveVideo
 );
@@ -90,13 +90,13 @@ router.delete("/video/:id", deleteVideo);
 
 router.post(
   "/video/edit",
-  verifyJWT, // 🔥 ADD THIS (VERY IMPORTANT)
+  
   upload.single("video"),
   editVideo
 );
 
 router.post("/video/merge", upload.array("videos"), mergeVideos);
 router.post("/video/speed", upload.single("video"), changeSpeed);
-router.get("/channel-analytics", verifyJWT, getChannelAnalytics);
+router.get("/channel-analytics",  getChannelAnalytics);
 
 export default router;
