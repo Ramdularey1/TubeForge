@@ -1,5 +1,5 @@
 import { google } from "googleapis";
-import { oauth2Client } from "../config/googleOauth.js";
+import {oauth2Client} from "../server.js"
 import { User } from "../models/user.model.js";
 
 // ================= VIDEO ANALYTICS =================

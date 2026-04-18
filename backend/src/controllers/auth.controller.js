@@ -1,4 +1,6 @@
-import { oauth2Client } from "../config/googleOauth.js";
+
+// import { oauth2Client } from "../config/googleOauth.js";
+import {oauth2Client} from "../server.js"
 import { google } from "googleapis";
 import jwt from "jsonwebtoken";
 // import { User } from "../models/User.model.js";
@@ -6,21 +8,45 @@ import { User } from "../models/user.model.js";
 
 
 // ================= GOOGLE LOGIN =================
+// export const googleLogin = async (req, res) => {
+
+//   const url = oauth2Client.generateAuthUrl({
+//     access_type: "offline",
+//     prompt: "consent", // ensures refresh_token comes
+//     scope: [
+//       "profile",
+//       "email",
+//       "https://www.googleapis.com/auth/youtube.upload",
+//       "https://www.googleapis.com/auth/youtube.readonly"
+//     ]
+//   });
+
+//   res.redirect(url);
+// };
+
+
 export const googleLogin = async (req, res) => {
+  try {
+    console.log("USING CLIENT ID:", oauth2Client._clientId);
+    const url = oauth2Client.generateAuthUrl({
+      access_type: "offline",
+      prompt: "consent", // ensures refresh_token comes
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI, // 🔥 FIX ADDED
+      scope: [
+        "profile",
+        "email",
+        "https://www.googleapis.com/auth/youtube.upload",
+        "https://www.googleapis.com/auth/youtube.readonly",
+      ],
+    });
 
-  const url = oauth2Client.generateAuthUrl({
-    access_type: "offline",
-    prompt: "consent", // ensures refresh_token comes
-    scope: [
-      "profile",
-      "email",
-      "https://www.googleapis.com/auth/youtube.upload",
-      "https://www.googleapis.com/auth/youtube.readonly"
-    ]
-  });
-
-  res.redirect(url);
+    return res.redirect(url);
+  } catch (error) {
+    console.error("Google Login Error:", error);
+    return res.status(500).json({ message: "Google login failed" });
+  }
 };
+
 
 
 // ================= GOOGLE CALLBACK =================

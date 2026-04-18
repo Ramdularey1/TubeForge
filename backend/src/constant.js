@@ -1,1 +1,1 @@
-export const DB_NAME = 'tubeforge';
+export const DB_NAME='tubeforge';
