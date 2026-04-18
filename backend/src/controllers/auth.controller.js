@@ -105,7 +105,7 @@ export const googleCallback = async (req, res) => {
 });
 
     // redirect to frontend (later)
-    res.redirect("http://localhost:5173/dashboard");
+    res.redirect("http://localhost:5174/dashboard");
 
   } catch (error) {
     console.log(error);
