@@ -31,7 +31,7 @@ const EditVideo = () => {
       setSelectedVideo(stored);
 
       const url =
-        "http://localhost:8000" +
+        "https://tubeforge-lhg4.onrender.com" +
         stored.videoUrl +
         "?t=" +
         Date.now();
@@ -85,7 +85,7 @@ const EditVideo = () => {
       const newVideo = res.data.videoPath;
 
       const url =
-        "http://localhost:8000" + newVideo + "?t=" + Date.now();
+        "https://tubeforge-lhg4.onrender.com" + newVideo + "?t=" + Date.now();
 
       setTrimmedVideo(newVideo);
       setPreview(url);
@@ -126,7 +126,7 @@ const EditVideo = () => {
       const newVideo = res.data.videoPath;
 
       const url =
-        "http://localhost:8000" + newVideo + "?t=" + Date.now();
+        "https://tubeforge-lhg4.onrender.com" + newVideo + "?t=" + Date.now();
 
       setTrimmedVideo(newVideo);
       setPreview(url);
@@ -166,7 +166,7 @@ const EditVideo = () => {
     const newVideo = res.data.videoPath;
 
     const url =
-      "http://localhost:8000" + newVideo + "?t=" + Date.now();
+      "https://tubeforge-lhg4.onrender.com" + newVideo + "?t=" + Date.now();
 
     setMergePreview(url);
     setMergedVideo(newVideo); // ✅ FIX

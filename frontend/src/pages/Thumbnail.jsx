@@ -31,7 +31,7 @@ const Thumbnail = () => {
         { title: thumbnailTitle }
       );
 
-      setImage("http://localhost:8000" + res.data.thumbnailPath);
+      setImage("https://tubeforge-lhg4.onrender.com" + res.data.thumbnailPath);
     } catch (err) {
       console.log(err);
     } finally {
@@ -45,7 +45,7 @@ const Thumbnail = () => {
 
       await API.post("/youtube/save-thumbnail", {
         title: thumbnailTitle,
-        imageUrl: image.replace("http://localhost:8000", ""),
+        imageUrl: image.replace("https://tubeforge-lhg4.onrender.com", ""),
       });
 
       setSaved(true);

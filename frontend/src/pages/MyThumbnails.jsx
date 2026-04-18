@@ -89,7 +89,7 @@ const MyThumbnails = () => {
             {/* IMAGE */}
             <img
               src={
-                "http://localhost:8000" +
+                "https://tubeforge-lhg4.onrender.com" +
                 thumb.imageUrl
               }
               className="w-full h-48 object-cover transition group-hover:scale-105"

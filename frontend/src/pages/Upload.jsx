@@ -274,7 +274,7 @@ const Upload = () => {
                 <video controls className="w-full rounded-lg">
                   <source
                     src={
-                      "http://localhost:8000" +
+                      "https://tubeforge-lhg4.onrender.com" +
                       selectedVideo.videoUrl
                     }
                   />
@@ -305,7 +305,7 @@ const Upload = () => {
               {selectedThumb && (
                 <img
                   src={
-                    "http://localhost:8000" +
+                    "https://tubeforge-lhg4.onrender.com" +
                     selectedThumb.imageUrl
                   }
                   className="w-full rounded-lg"

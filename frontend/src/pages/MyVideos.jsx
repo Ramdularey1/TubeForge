@@ -113,7 +113,7 @@ const MyVideos = () => {
                 onMouseLeave={(e) => e.currentTarget.play()}
               >
                 <source
-                  src={"http://localhost:8000" + video.videoUrl}
+                  src={"https://tubeforge-lhg4.onrender.com" + video.videoUrl}
                 />
               </video>
 

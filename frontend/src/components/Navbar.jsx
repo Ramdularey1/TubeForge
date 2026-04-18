@@ -14,7 +14,7 @@ const Navbar = () => {
   const fetchUser = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:8000/auth/get-user",
+        "https://tubeforge-lhg4.onrender.com/auth/get-user",
         {
           withCredentials: true, // ✅ important for cookies
         }
@@ -43,7 +43,7 @@ const Navbar = () => {
  const handleLogout = async () => {
   try {
     await axios.post(
-      "http://localhost:8000/auth/logout",
+      "https://tubeforge-lhg4.onrender.com/auth/logout",
       {},
       {
         withCredentials: true,
