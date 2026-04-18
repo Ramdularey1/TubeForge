@@ -29,7 +29,7 @@ export const oauth2Client = new google.auth.OAuth2(
 // CORS
 app.use(
   cors({
-    origin: "https://tube-forge-2ck1s47vw-ram-dulareys-projects.vercel.app/", // change when deployed
+    origin: "https://tube-forge-2ck1s47vw-ram-dulareys-projects.vercel.app", // change when deployed
     credentials: true,
   })
 );
