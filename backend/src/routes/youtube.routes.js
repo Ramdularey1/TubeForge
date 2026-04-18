@@ -54,7 +54,7 @@ router.get("/dashboard",verifyJWT, getDashboard);
 📈 Video Analytics
 ==================================================
 */
-router.get("/analytics/:videoId", getVideoAnalytics);
+router.get("/analytics/:videoId",verifyJWT, getVideoAnalytics);
 
 router.get("/videos",verifyJWT, getChannelVideos);
 
