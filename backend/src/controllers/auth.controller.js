@@ -100,8 +100,8 @@ export const googleCallback = async (req, res) => {
     // send cookie
     res.cookie("token", token, {
   httpOnly: true,
-  secure: false,
-  sameSite: "lax",
+  secure: true,
+  sameSite: "none",
 });
 
     // redirect to frontend (later)
