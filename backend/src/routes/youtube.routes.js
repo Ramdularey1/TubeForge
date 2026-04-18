@@ -25,7 +25,7 @@ const router = express.Router();
 🔐 All YouTube routes require authentication
 ==================================================
 */
-router.use(verifyJWT);
+// router.use(verifyJWT);
 
 /*
 ==================================================
@@ -46,7 +46,7 @@ router.post(
 📊 Dashboard
 ==================================================
 */
-router.get("/dashboard", getDashboard);
+router.get("/dashboard",verifyJWT, getDashboard);
 
 /*
 ==================================================
@@ -55,7 +55,7 @@ router.get("/dashboard", getDashboard);
 */
 router.get("/analytics/:videoId", getVideoAnalytics);
 
-router.get("/videos", getChannelVideos);
+router.get("/videos",verifyJWT, getChannelVideos);
 
 router.post("/generate-thumbnail", async (req, res) => {
 
@@ -74,29 +74,29 @@ router.post("/generate-thumbnail", async (req, res) => {
   });
 });
 
-router.post("/save-thumbnail",saveThumbnail);
+router.post("/save-thumbnail", verifyJWT, saveThumbnail);
 
 router.get("/thumbnails", getThumbnail);
 // router.post("/save-video", saveVideo);
 router.post(
   "/save-video",
- 
+ verifyJWT,
   upload.single("video"), // 🔥 MUST MATCH FRONTEND
   saveVideo
 );
-router.get("/fetch-video",getVideo)
-router.delete("/thumbnail/:id", deleteThumbnail);
-router.delete("/video/:id", deleteVideo);
+router.get("/fetch-video",verifyJWT,getVideo)
+router.delete("/thumbnail/:id",verifyJWT, deleteThumbnail);
+router.delete("/video/:id",verifyJWT, deleteVideo);
 
 router.post(
   "/video/edit",
-  
+  verifyJWT,
   upload.single("video"),
   editVideo
 );
 
 router.post("/video/merge", upload.array("videos"), mergeVideos);
 router.post("/video/speed", upload.single("video"), changeSpeed);
-router.get("/channel-analytics",  getChannelAnalytics);
+router.get("/channel-analytics",verifyJWT,  getChannelAnalytics);
 
 export default router;
