@@ -34,6 +34,7 @@ const router = express.Router();
 */
 router.post(
   "/video",
+  verifyJWT,
   upload.fields([
     { name: "video", maxCount: 1 },
     { name: "thumbnail", maxCount: 1 },
