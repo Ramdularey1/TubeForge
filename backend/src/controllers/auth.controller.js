@@ -105,7 +105,7 @@ export const googleCallback = async (req, res) => {
 });
 
     // redirect to frontend (later)
-    res.redirect("http://localhost:5174/dashboard");
+    res.redirect("https://tubeforge-lhg4.onrender.com/dashboard");
 
   } catch (error) {
     console.log(error);
