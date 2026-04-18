@@ -22,6 +22,7 @@ const Dashboard = () => {
     }
   };
 
+  console.log("🔥 DASHBOARD DATA:", data);
   // 🔥 Loading UI
   if (!data)
     return (
