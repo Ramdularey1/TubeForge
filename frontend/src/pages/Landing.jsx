@@ -3,7 +3,7 @@ import React from "react";
 
 const Landing = () => {
   const handleLogin = () => {
-    window.location.href = "http://localhost:8000/auth/google";
+    window.location.href = "https://tubeforge-lhg4.onrender.com/auth/google";
   };
 
   return (
