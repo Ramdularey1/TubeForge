@@ -25,7 +25,7 @@ const router = express.Router();
 🔐 All YouTube routes require authentication
 ==================================================
 */
-// router.use(verifyJWT);
+router.use(verifyJWT);
 
 /*
 ==================================================
