@@ -685,10 +685,125 @@ ffmpeg.setFfprobePath(ffprobePath.path);
 //   }
 // };
 
+// export const editVideo = async (req, res) => {
+//   let tempInputPath = null;
+
+//   try {
+//     let { start, end } = req.body;
+
+//     start = Number(start);
+//     end = Number(end);
+
+//     // ✅ validation
+//     if (isNaN(start) || isNaN(end) || end <= start) {
+//       return res.status(400).json({
+//         message: "Invalid trim range",
+//       });
+//     }
+
+//     if (!req.user) {
+//       return res.status(401).json({
+//         message: "Unauthorized",
+//       });
+//     }
+
+//     let inputPath;
+
+//     // ✅ uploaded file
+//     if (req.file) {
+//       inputPath = req.file.path;
+//       tempInputPath = req.file.path;
+//     }
+
+//     // ✅ DB video path
+//     else if (req.body.videoPath) {
+//       inputPath = path.join(
+//         process.cwd(),
+//         req.body.videoPath.replace(/^\/+/, "")
+//       );
+//     }
+
+//     else {
+//       return res.status(400).json({
+//         message: "Video required",
+//       });
+//     }
+
+//     // ✅ CHECK FILE EXISTS (VERY IMPORTANT)
+//     if (!fs.existsSync(inputPath)) {
+//       return res.status(400).json({
+//         message: "Input video not found",
+//         path: inputPath,
+//       });
+//     }
+
+//     const uploadDir = path.join(process.cwd(), "uploads");
+
+//     if (!fs.existsSync(uploadDir)) {
+//       fs.mkdirSync(uploadDir);
+//     }
+
+//     const outputFileName = `${uuidv4()}.mp4`;
+//     const outputPath = path.join(uploadDir, outputFileName);
+
+//     const duration = end - start;
+
+//     // ✅ FFmpeg processing
+//     ffmpeg(inputPath)
+//       .setStartTime(start)
+//       .setDuration(duration)
+//       .output(outputPath)
+//       .on("start", (cmd) => {
+//         console.log("FFmpeg started:", cmd);
+//       })
+//       .on("end", () => {
+//         console.log("✅ Video trimmed");
+
+//         // cleanup temp file
+//         if (tempInputPath && fs.existsSync(tempInputPath)) {
+//           fs.unlinkSync(tempInputPath);
+//         }
+
+//         return res.json({
+//           message: "Trim success",
+//           videoPath: `/uploads/${outputFileName}`,
+//         });
+//       })
+//       .on("error", (err) => {
+//         console.error("❌ FFmpeg ERROR FULL:", err);
+
+//         if (tempInputPath && fs.existsSync(tempInputPath)) {
+//           fs.unlinkSync(tempInputPath);
+//         }
+
+//         return res.status(500).json({
+//           message: "Edit failed",
+//           error: err.message,
+//         });
+//       })
+//       .run();
+
+//   } catch (error) {
+//     console.error("❌ SERVER ERROR:", error);
+
+//     if (tempInputPath && fs.existsSync(tempInputPath)) {
+//       fs.unlinkSync(tempInputPath);
+//     }
+
+//     return res.status(500).json({
+//       message: "Server error",
+//     });
+//   }
+// };
+
+
+
 export const editVideo = async (req, res) => {
   let tempInputPath = null;
 
   try {
+    console.log("🔥 EDIT VIDEO HIT");
+
     let { start, end } = req.body;
 
     start = Number(start);
@@ -698,6 +813,13 @@ export const editVideo = async (req, res) => {
     if (isNaN(start) || isNaN(end) || end <= start) {
       return res.status(400).json({
         message: "Invalid trim range",
+      });
+    }
+
+    // ✅ LIMIT duration (prevent heavy load)
+    if (end - start > 30) {
+      return res.status(400).json({
+        message: "Max 30 seconds trim allowed",
       });
     }
 
@@ -711,6 +833,13 @@ export const editVideo = async (req, res) => {
 
     // ✅ uploaded file
     if (req.file) {
+      // LIMIT FILE SIZE (10MB)
+      if (req.file.size > 10 * 1024 * 1024) {
+        return res.status(400).json({
+          message: "File too large (max 10MB)",
+        });
+      }
+
       inputPath = req.file.path;
       tempInputPath = req.file.path;
     }
@@ -721,15 +850,15 @@ export const editVideo = async (req, res) => {
         process.cwd(),
         req.body.videoPath.replace(/^\/+/, "")
       );
-    }
-
-    else {
+    } else {
       return res.status(400).json({
         message: "Video required",
       });
     }
 
-    // ✅ CHECK FILE EXISTS (VERY IMPORTANT)
+    console.log("📁 Input Path:", inputPath);
+
+    // ✅ check file exists
     if (!fs.existsSync(inputPath)) {
       return res.status(400).json({
         message: "Input video not found",
@@ -748,13 +877,18 @@ export const editVideo = async (req, res) => {
 
     const duration = end - start;
 
-    // ✅ FFmpeg processing
+    // ✅ FFmpeg processing (OPTIMIZED)
     ffmpeg(inputPath)
       .setStartTime(start)
       .setDuration(duration)
+      .outputOptions([
+        "-preset ultrafast", // 🔥 reduce CPU usage
+        "-crf 28",           // 🔥 compress output
+        "-threads 1"         // 🔥 prevent crash (VERY IMPORTANT)
+      ])
       .output(outputPath)
       .on("start", (cmd) => {
-        console.log("FFmpeg started:", cmd);
+        console.log("🚀 FFmpeg started:", cmd);
       })
       .on("end", () => {
         console.log("✅ Video trimmed");
@@ -770,7 +904,7 @@ export const editVideo = async (req, res) => {
         });
       })
       .on("error", (err) => {
-        console.error("❌ FFmpeg ERROR FULL:", err);
+        console.error("❌ FFmpeg ERROR:", err);
 
         if (tempInputPath && fs.existsSync(tempInputPath)) {
           fs.unlinkSync(tempInputPath);
@@ -795,7 +929,6 @@ export const editVideo = async (req, res) => {
     });
   }
 };
-
 
 export const changeSpeed = async (req, res) => {
   try {
