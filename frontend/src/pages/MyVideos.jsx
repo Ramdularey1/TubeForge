@@ -144,12 +144,12 @@ const MyVideos = () => {
                   Use
                 </button>
 
-                <button
+                {/* <button
                   onClick={() => handleEdit(video)}
                   className="bg-yellow-500 hover:bg-yellow-400 px-3 py-1.5 rounded-lg text-sm transition"
                 >
                   Edit
-                </button>
+                </button> */}
 
                 <button
                   onClick={() => deleteVideo(video._id)}
