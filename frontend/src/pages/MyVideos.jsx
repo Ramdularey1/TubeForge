@@ -152,12 +152,12 @@ const MyVideos = () => {
                   Edit
                 </button> */}
 
-                <button
+                {/* <button
                   onClick={() => deleteVideo(video._id)}
                   className="bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded-lg text-sm transition"
                 >
                   Delete
-                </button>
+                </button> */}
 
               </div>
 
