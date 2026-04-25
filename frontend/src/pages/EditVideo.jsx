@@ -226,156 +226,159 @@ const EditVideo = () => {
 
 
   return (
-    <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-8">
+    <>
+    <h1>Comming soon</h1>
+    </>
+    // <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-8">
 
-      <h1 className="text-xl md:text-2xl font-bold text-center">
-        Video Editor 🚀
-      </h1>
+    //   <h1 className="text-xl md:text-2xl font-bold text-center">
+    //     Video Editor 🚀
+    //   </h1>
 
-      {/* GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    //   {/* GRID */}
+    //   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        {/* TRIM + SPEED */}
-        <div className="border p-4 rounded shadow-sm">
+    //     {/* TRIM + SPEED */}
+    //     <div className="border p-4 rounded shadow-sm">
 
-          <h2 className="font-semibold text-lg mb-2">
-            Trim & Speed
-          </h2>
+    //       <h2 className="font-semibold text-lg mb-2">
+    //         Trim & Speed
+    //       </h2>
 
-          <input type="file" onChange={handleSelect} />
+    //       <input type="file" onChange={handleSelect} />
 
-          {preview && (
-            <video
-              key={preview}
-              controls
-              className="w-full max-w-md mx-auto mt-4 rounded"
-            >
-              <source src={preview} />
-            </video>
-          )}
+    //       {preview && (
+    //         <video
+    //           key={preview}
+    //           controls
+    //           className="w-full max-w-md mx-auto mt-4 rounded"
+    //         >
+    //           <source src={preview} />
+    //         </video>
+    //       )}
 
-          <div className="mt-4 space-y-2">
-            <div>
-              <label className="text-sm">Start: {start}s</label>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={start}
-                onChange={(e) => setStart(e.target.value)}
-                className="w-full"
-              />
-            </div>
+    //       <div className="mt-4 space-y-2">
+    //         <div>
+    //           <label className="text-sm">Start: {start}s</label>
+    //           <input
+    //             type="range"
+    //             min="0"
+    //             max="100"
+    //             value={start}
+    //             onChange={(e) => setStart(e.target.value)}
+    //             className="w-full"
+    //           />
+    //         </div>
 
-            <div>
-              <label className="text-sm">End: {end}s</label>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={end}
-                onChange={(e) => setEnd(e.target.value)}
-                className="w-full"
-              />
-            </div>
-          </div>
+    //         <div>
+    //           <label className="text-sm">End: {end}s</label>
+    //           <input
+    //             type="range"
+    //             min="0"
+    //             max="100"
+    //             value={end}
+    //             onChange={(e) => setEnd(e.target.value)}
+    //             className="w-full"
+    //           />
+    //         </div>
+    //       </div>
 
-          <button
-            onClick={handleTrim}
-            disabled={trimLoading}
-            className="bg-green-600 text-white px-4 py-2 mt-4 rounded w-full"
-          >
-            {trimLoading ? "Trimming..." : "Trim Video"}
-          </button>
+    //       <button
+    //         onClick={handleTrim}
+    //         disabled={trimLoading}
+    //         className="bg-green-600 text-white px-4 py-2 mt-4 rounded w-full"
+    //       >
+    //         {trimLoading ? "Trimming..." : "Trim Video"}
+    //       </button>
 
-          <div className="mt-4">
-            <select
-              value={speed}
-              onChange={(e) => setSpeed(e.target.value)}
-              className="border p-2 w-full rounded"
-            >
-              <option value={0.5}>0.5x</option>
-              <option value={1}>1x</option>
-              <option value={2}>2x</option>
-            </select>
+    //       <div className="mt-4">
+    //         <select
+    //           value={speed}
+    //           onChange={(e) => setSpeed(e.target.value)}
+    //           className="border p-2 w-full rounded"
+    //         >
+    //           <option value={0.5}>0.5x</option>
+    //           <option value={1}>1x</option>
+    //           <option value={2}>2x</option>
+    //         </select>
 
-            <button
-              onClick={handleSpeed}
-              disabled={speedLoading}
-              className="bg-yellow-600 text-white px-4 py-2 mt-2 rounded w-full"
-            >
-              {speedLoading ? "Applying Speed..." : "Apply Speed"}
-            </button>
-          </div>
+    //         <button
+    //           onClick={handleSpeed}
+    //           disabled={speedLoading}
+    //           className="bg-yellow-600 text-white px-4 py-2 mt-2 rounded w-full"
+    //         >
+    //           {speedLoading ? "Applying Speed..." : "Apply Speed"}
+    //         </button>
+    //       </div>
 
-          {trimmedVideo && (
-            <button
-              onClick={handleSave}
-              className="bg-blue-600 text-white px-4 py-2 mt-4 rounded w-full"
-            >
-              Save Video
-            </button>
-          )}
+    //       {trimmedVideo && (
+    //         <button
+    //           onClick={handleSave}
+    //           className="bg-blue-600 text-white px-4 py-2 mt-4 rounded w-full"
+    //         >
+    //           Save Video
+    //         </button>
+    //       )}
 
-        </div>
+    //     </div>
 
-        {/* MERGE */}
-        <div className="border p-4 rounded shadow-sm">
+    //     {/* MERGE */}
+    //     <div className="border p-4 rounded shadow-sm">
 
-          <h2 className="font-semibold text-lg mb-2">
-            Merge Videos
-          </h2>
+    //       <h2 className="font-semibold text-lg mb-2">
+    //         Merge Videos
+    //       </h2>
 
-          <input type="file" multiple onChange={handleMultiSelect} />
+    //       <input type="file" multiple onChange={handleMultiSelect} />
 
-          {videos.length > 0 && (
-            <p className="text-sm text-gray-600 mt-2">
-              {videos.length} video(s) selected
-            </p>
-          )}
+    //       {videos.length > 0 && (
+    //         <p className="text-sm text-gray-600 mt-2">
+    //           {videos.length} video(s) selected
+    //         </p>
+    //       )}
 
-          {videos.length === 1 && (
-            <p className="text-red-500 text-sm">
-              Select at least 2 videos
-            </p>
-          )}
+    //       {videos.length === 1 && (
+    //         <p className="text-red-500 text-sm">
+    //           Select at least 2 videos
+    //         </p>
+    //       )}
 
-          <button
-            onClick={handleMerge}
-            disabled={videos.length < 2 || mergeLoading}
-            className={`px-4 py-2 mt-3 rounded w-full ${
-              videos.length < 2 || mergeLoading
-                ? "bg-gray-400"
-                : "bg-purple-600 text-white"
-            }`}
-          >
-            {mergeLoading ? "Merging..." : "Merge Videos"}
-          </button>
+    //       <button
+    //         onClick={handleMerge}
+    //         disabled={videos.length < 2 || mergeLoading}
+    //         className={`px-4 py-2 mt-3 rounded w-full ${
+    //           videos.length < 2 || mergeLoading
+    //             ? "bg-gray-400"
+    //             : "bg-purple-600 text-white"
+    //         }`}
+    //       >
+    //         {mergeLoading ? "Merging..." : "Merge Videos"}
+    //       </button>
 
-          {mergePreview && (
-            <video
-              key={mergePreview}
-              controls
-              className="w-full max-w-md mx-auto mt-4 rounded"
-            >
-              <source src={mergePreview} />
-            </video>
-          )}
+    //       {mergePreview && (
+    //         <video
+    //           key={mergePreview}
+    //           controls
+    //           className="w-full max-w-md mx-auto mt-4 rounded"
+    //         >
+    //           <source src={mergePreview} />
+    //         </video>
+    //       )}
 
-            {mergePreview && (
-            <button
-              onClick={handleSave}
-              className="bg-blue-600 text-white px-4 py-2 mt-4 rounded w-full"
-            >
-              Save Video
-            </button>
-          )}
+    //         {mergePreview && (
+    //         <button
+    //           onClick={handleSave}
+    //           className="bg-blue-600 text-white px-4 py-2 mt-4 rounded w-full"
+    //         >
+    //           Save Video
+    //         </button>
+    //       )}
 
-        </div>
+    //     </div>
 
-      </div>
+    //   </div>
 
-    </div>
+    // </div>
   );
 };
 
