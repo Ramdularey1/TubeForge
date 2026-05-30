@@ -107,6 +107,7 @@ export const googleCallback = async (req, res) => {
     // redirect to frontend (later)
     res.redirect("https://tube-forge-duvv5uqhb-ram-dulareys-projects.vercel.app//dashboard");
 
+    
   } catch (error) {
     console.log(error);
     res.send("Authentication Failed");
