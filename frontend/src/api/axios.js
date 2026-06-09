@@ -8,6 +8,11 @@ const API = axios.create({
 API.interceptors.request.use((config) => {
   if (localStorage.getItem("tubeforge_guest") === "true") {
     config.headers["X-Guest-Mode"] = "true";
+
+    const guestEmail = localStorage.getItem("tubeforge_guest_email");
+    if (guestEmail) {
+      config.headers["X-Guest-Email"] = guestEmail;
+    }
   }
 
   return config;

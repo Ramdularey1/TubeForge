@@ -1,14 +1,27 @@
 
-import React from "react";
+import React, { useState } from "react";
 
 const Landing = () => {
+  const [guestEmail, setGuestEmail] = useState("");
+  const [guestEmailError, setGuestEmailError] = useState("");
+
   const handleLogin = () => {
     localStorage.removeItem("tubeforge_guest");
+    localStorage.removeItem("tubeforge_guest_email");
     window.location.href = "https://tubeforge-lhg4.onrender.com/auth/google";
   };
 
   const handleGuestLogin = () => {
+    const email = guestEmail.trim().toLowerCase();
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    if (!isValidEmail) {
+      setGuestEmailError("Enter the email linked with your YouTube channel.");
+      return;
+    }
+
     localStorage.setItem("tubeforge_guest", "true");
+    localStorage.setItem("tubeforge_guest_email", email);
     window.location.href = "/dashboard";
   };
 
@@ -53,7 +66,7 @@ const Landing = () => {
             clean workflow designed for creators.
           </p>
 
-          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="mx-auto mt-8 flex max-w-2xl flex-col items-stretch justify-center gap-4 sm:flex-row">
             <button
               onClick={handleLogin}
               className="w-full rounded-xl bg-red-600 px-6 py-3 font-semibold transition hover:scale-[1.02] hover:bg-red-500 sm:w-auto"
@@ -61,12 +74,36 @@ const Landing = () => {
               Get Started
             </button>
 
-            <button
-              onClick={handleGuestLogin}
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-6 py-3 font-semibold backdrop-blur-md transition hover:bg-white/10 sm:w-auto"
-            >
-              Continue as Guest
-            </button>
+            <div className="w-full space-y-2 sm:max-w-sm">
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <input
+                  type="email"
+                  value={guestEmail}
+                  onChange={(e) => {
+                    setGuestEmail(e.target.value);
+                    setGuestEmailError("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleGuestLogin();
+                  }}
+                  placeholder="YouTube channel email"
+                  className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none backdrop-blur-md transition placeholder:text-gray-500 focus:border-red-400"
+                />
+
+                <button
+                  onClick={handleGuestLogin}
+                  className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 font-semibold backdrop-blur-md transition hover:bg-white/10"
+                >
+                  Guest
+                </button>
+              </div>
+
+              {guestEmailError && (
+                <p className="text-left text-xs text-red-300">
+                  {guestEmailError}
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3">

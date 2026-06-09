@@ -14,9 +14,13 @@ const Navbar = () => {
   const fetchUser = async () => {
     try {
       if (localStorage.getItem("tubeforge_guest") === "true") {
+        const guestEmail =
+          localStorage.getItem("tubeforge_guest_email") ||
+          "guest@tubeforge.demo";
+
         setUser({
           name: "Guest Creator",
-          email: "guest@tubeforge.demo",
+          email: guestEmail,
           picture: "https://i.pravatar.cc/80?img=12",
         });
         return;
@@ -47,6 +51,7 @@ const Navbar = () => {
  const handleLogout = async () => {
   try {
     localStorage.removeItem("tubeforge_guest");
+    localStorage.removeItem("tubeforge_guest_email");
     await API.post("/auth/logout");
 
     // ✅ clear user state (instant UI update)
@@ -60,6 +65,7 @@ const Navbar = () => {
 
     // ✅ fallback (even if API fails, still logout UI)
     localStorage.removeItem("tubeforge_guest");
+    localStorage.removeItem("tubeforge_guest_email");
     setUser(null);
     window.location.replace("/");
   }

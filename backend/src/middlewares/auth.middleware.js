@@ -6,7 +6,13 @@ import { guestUser } from "../utils/guestData.js";
 export const verifyJWT = async (req, res, next) => {
   try {
     if (req.header("X-Guest-Mode") === "true") {
-      req.user = guestUser;
+      const guestEmail = req.header("X-Guest-Email") || guestUser.email;
+
+      req.user = {
+        ...guestUser,
+        email: guestEmail,
+      };
+
       return next();
     }
 
