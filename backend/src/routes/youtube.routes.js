@@ -20,6 +20,16 @@ import { get } from "mongoose";
 
 const router = express.Router();
 
+const requireRealUser = (req, res, next) => {
+  if (req.user?.isGuest) {
+    return res.status(403).json({
+      message: "Please login with Google to use this action.",
+    });
+  }
+
+  next();
+};
+
 /*
 ==================================================
 🔐 All YouTube routes require authentication
@@ -35,6 +45,7 @@ const router = express.Router();
 router.post(
   "/video",
   verifyJWT,
+  requireRealUser,
   upload.fields([
     { name: "video", maxCount: 1 },
     { name: "thumbnail", maxCount: 1 },
@@ -82,6 +93,7 @@ router.get("/thumbnails",verifyJWT, getThumbnail);
 router.post(
   "/save-video",
  verifyJWT,
+ requireRealUser,
   upload.single("video"), // 🔥 MUST MATCH FRONTEND
   saveVideo
 );
@@ -92,6 +104,7 @@ router.delete("/video/:id",verifyJWT, deleteVideo);
 router.post(
   "/video/edit",
   verifyJWT,
+  requireRealUser,
   upload.single("video"),
   editVideo
 );

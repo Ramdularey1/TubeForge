@@ -1,9 +1,14 @@
 
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
+import { guestUser } from "../utils/guestData.js";
 
 export const verifyJWT = async (req, res, next) => {
   try {
+    if (req.header("X-Guest-Mode") === "true") {
+      req.user = guestUser;
+      return next();
+    }
 
     const token =
       req.cookies?.token ||

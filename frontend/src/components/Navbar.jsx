@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import API from "../api/axios";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -13,12 +13,16 @@ const Navbar = () => {
   // ✅ Fetch user using cookies
   const fetchUser = async () => {
     try {
-      const res = await axios.get(
-        "https://tubeforge-lhg4.onrender.com/auth/get-user",
-        {
-          withCredentials: true, // ✅ important for cookies
-        }
-      );
+      if (localStorage.getItem("tubeforge_guest") === "true") {
+        setUser({
+          name: "Guest Creator",
+          email: "guest@tubeforge.demo",
+          picture: "https://i.pravatar.cc/80?img=12",
+        });
+        return;
+      }
+
+      const res = await API.get("/auth/get-user");
 
       setUser(res.data);
       console.log("User:", res.data);
@@ -42,13 +46,8 @@ const Navbar = () => {
   // ✅ Logout (clear cookie from backend)
  const handleLogout = async () => {
   try {
-    await axios.post(
-      "https://tubeforge-lhg4.onrender.com/auth/logout",
-      {},
-      {
-        withCredentials: true,
-      }
-    );
+    localStorage.removeItem("tubeforge_guest");
+    await API.post("/auth/logout");
 
     // ✅ clear user state (instant UI update)
     setUser(null);
@@ -60,6 +59,7 @@ const Navbar = () => {
     console.error("Logout error:", err);
 
     // ✅ fallback (even if API fails, still logout UI)
+    localStorage.removeItem("tubeforge_guest");
     setUser(null);
     window.location.replace("/");
   }

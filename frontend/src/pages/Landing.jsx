@@ -3,7 +3,13 @@ import React from "react";
 
 const Landing = () => {
   const handleLogin = () => {
+    localStorage.removeItem("tubeforge_guest");
     window.location.href = "https://tubeforge-lhg4.onrender.com/auth/google";
+  };
+
+  const handleGuestLogin = () => {
+    localStorage.setItem("tubeforge_guest", "true");
+    window.location.href = "/dashboard";
   };
 
   return (
@@ -55,8 +61,11 @@ const Landing = () => {
               Get Started
             </button>
 
-            <button className="w-full rounded-xl border border-white/10 bg-white/5 px-6 py-3 font-semibold backdrop-blur-md transition hover:bg-white/10 sm:w-auto">
-              Explore Features
+            <button
+              onClick={handleGuestLogin}
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-6 py-3 font-semibold backdrop-blur-md transition hover:bg-white/10 sm:w-auto"
+            >
+              Continue as Guest
             </button>
           </div>
 

@@ -3,6 +3,13 @@ import API from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 
+const getMediaUrl = (url) => {
+  if (!url) return "";
+  return url.startsWith("http")
+    ? url
+    : "https://tubeforge-lhg4.onrender.com" + url;
+};
+
 const MyThumbnails = () => {
   const [thumbnails, setThumbnails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -88,10 +95,7 @@ const MyThumbnails = () => {
 
             {/* IMAGE */}
             <img
-              src={
-                "https://tubeforge-lhg4.onrender.com" +
-                thumb.imageUrl
-              }
+              src={getMediaUrl(thumb.imageUrl)}
               className="w-full h-48 object-cover transition group-hover:scale-105"
             />
 

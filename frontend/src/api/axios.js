@@ -5,14 +5,19 @@ const API = axios.create({
   withCredentials: true,
 });
 
+API.interceptors.request.use((config) => {
+  if (localStorage.getItem("tubeforge_guest") === "true") {
+    config.headers["X-Guest-Mode"] = "true";
+  }
+
+  return config;
+});
+
 export default API;
 
 
 export const getChannelAnalytics = async () => {
-  const res = await axios.get(
-    "https://tubeforge-lhg4.onrender.com/youtube/channel-analytics",
-    { withCredentials: true }
-  );
+  const res = await API.get("/youtube/channel-analytics");
 
   return res.data;
 };

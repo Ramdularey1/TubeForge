@@ -11,6 +11,12 @@ import { v4 as uuidv4 } from "uuid";
 import ffprobePath from "ffprobe-static";
 import ffmpegPath from "ffmpeg-static";
 import path from "path";
+import {
+  guestDashboard,
+  guestSavedVideos,
+  guestThumbnails,
+  guestVideos,
+} from "../utils/guestData.js";
 
 
 
@@ -29,6 +35,12 @@ export const uploadVideo = async (req, res) => {
   let compressedThumbnailPath = null;
 
   try {
+    if (req.user?.isGuest) {
+      return res.status(403).json({
+        message: "Please login with Google to upload videos to YouTube.",
+      });
+    }
+
     console.log("🚀 Upload Started");
 
     const videoFile = req.files?.video?.[0];
@@ -176,6 +188,10 @@ export const uploadVideo = async (req, res) => {
 
 export const getDashboard = async (req, res) => {
   try {
+    if (req.user?.isGuest) {
+      return res.json(guestDashboard);
+    }
+
     console.log("YouTube Dashboard API HIT ✅");
 
     // logged-in user from JWT middleware
@@ -255,6 +271,13 @@ export const getDashboard = async (req, res) => {
 // ================= GET CHANNEL VIDEOS =================
 export const getChannelVideos = async (req, res) => {
   try {
+    if (req.user?.isGuest) {
+      return res.json({
+        message: "Guest channel videos fetched",
+        videos: guestVideos,
+      });
+    }
+
     const user = await User.findById(req.user._id);
 
     oauth2Client.setCredentials({
@@ -298,6 +321,12 @@ export const getChannelVideos = async (req, res) => {
 
 export const saveThumbnail = async (req, res) => {
   try {
+    if (req.user?.isGuest) {
+      return res.json({
+        message: "Guest thumbnail preview ready. Login to save it permanently.",
+        thumbnailId: "guest-thumbnail-preview",
+      });
+    }
 
     const { title, imageUrl } = req.body;
 
@@ -327,6 +356,9 @@ export const saveThumbnail = async (req, res) => {
 
 export const getThumbnail = async (req, res) => {
   try {
+      if (req.user?.isGuest) {
+        return res.json(guestThumbnails);
+      }
 
       const thumbnails =
         await Thumbnail.find({
@@ -390,6 +422,12 @@ export const getThumbnail = async (req, res) => {
 
 export const saveVideo = async (req, res) => {
   try {
+    if (req.user?.isGuest) {
+      return res.status(403).json({
+        message: "Please login to save videos to your TubeForge library.",
+      });
+    }
+
     console.log("🔥 SAVE VIDEO HIT");
 
     const { title, description, thumbnailPath, videoPath } = req.body;
@@ -450,6 +488,9 @@ export const saveVideo = async (req, res) => {
 
 export const getVideo = async (req, res) => {
   try {
+      if (req.user?.isGuest) {
+        return res.json(guestSavedVideos);
+      }
 
       const videos = await Video.find({
         user: req.user._id,
@@ -501,6 +542,12 @@ export const getVideo = async (req, res) => {
 
 export const deleteThumbnail = async (req, res) => {
   try {
+    if (req.user?.isGuest) {
+      return res.status(403).json({
+        message: "Login required to delete saved thumbnails.",
+      });
+    }
+
     const { id } = req.params;
 
     const thumbnail = await Thumbnail.findById(id);
@@ -547,6 +594,12 @@ export const deleteThumbnail = async (req, res) => {
 
 export const deleteVideo = async (req, res) => {
   try {
+    if (req.user?.isGuest) {
+      return res.status(403).json({
+        message: "Login required to delete saved videos.",
+      });
+    }
+
     const { id } = req.params;
 
     const video = await Video.findById(id);
@@ -1025,7 +1078,6 @@ export const mergeVideos = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 
 

@@ -1,6 +1,10 @@
 import { google } from "googleapis";
 import {oauth2Client} from "../server.js"
 import { User } from "../models/user.model.js";
+import {
+  guestChannelAnalytics,
+  guestVideoAnalytics,
+} from "../utils/guestData.js";
 
 // ================= VIDEO ANALYTICS =================
 export const getVideoAnalytics = async (req, res) => {
@@ -10,6 +14,14 @@ export const getVideoAnalytics = async (req, res) => {
     if (!videoId) {
       return res.status(400).json({
         message: "Video ID required",
+      });
+    }
+
+    if (req.user?.isGuest) {
+      return res.json({
+        message: "Guest video analytics fetched",
+        videoId,
+        analytics: guestVideoAnalytics,
       });
     }
 
@@ -77,6 +89,10 @@ export const getVideoAnalytics = async (req, res) => {
 
 export const getChannelAnalytics = async (req, res) => {
   try {
+    if (req.user?.isGuest) {
+      return res.json(guestChannelAnalytics);
+    }
+
     const user = await User.findById(req.user._id);
 
     if (!user) {

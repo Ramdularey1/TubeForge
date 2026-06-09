@@ -4,6 +4,13 @@ import API from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 
+const getMediaUrl = (url) => {
+  if (!url) return "";
+  return url.startsWith("http")
+    ? url
+    : "https://tubeforge-lhg4.onrender.com" + url;
+};
+
 const MyVideos = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -113,7 +120,7 @@ const MyVideos = () => {
                 onMouseLeave={(e) => e.currentTarget.play()}
               >
                 <source
-                  src={"https://tubeforge-lhg4.onrender.com" + video.videoUrl}
+                  src={getMediaUrl(video.videoUrl)}
                 />
               </video>
 

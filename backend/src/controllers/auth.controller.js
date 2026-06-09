@@ -3,6 +3,7 @@ import { google } from "googleapis";
 import jwt from "jsonwebtoken";
 // import { User } from "../models/User.model.js";
 import { User } from "../models/user.model.js";
+import { guestUser } from "../utils/guestData.js";
 
 
 // ================= GOOGLE LOGIN =================
@@ -116,6 +117,10 @@ export const googleCallback = async (req, res) => {
 
 export const fetchUser = async (req, res) => {
   try {
+    if (req.user?.isGuest) {
+      return res.json(guestUser);
+    }
+
     const user = req.user;
      console.log("🔥 FETCH USER:",user);
     res.json({
@@ -142,4 +147,3 @@ export const logout = (req, res) => {
     message: "Logged out successfully",
   });
 };
-
